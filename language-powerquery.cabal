@@ -11,18 +11,18 @@ homepage:            github.com/atidot/language-powerquery
 -- bug-reports:
 license:             BSD-3-Clause
 license-file:        LICENSE
-author:              Atidot Inc.
+author:              Atidot
 maintainer:          devops@atidot.com
 -- copyright:
 category:            Language
 extra-source-files:  CHANGELOG.md
 
 library
-  exposed-modules:     Language.PowerQuery.Token
-                     , Language.PowerQuery.AST
-                     , Language.PowerQuery.Lens
-                     , Language.PowerQuery.JSON
-                     , Language.PowerQuery.Annotation
+  exposed-modules:     Language.PowerQuery.AST.Token
+                     , Language.PowerQuery.AST.AST
+                     , Language.PowerQuery.AST.Lens
+                     , Language.PowerQuery.AST.JSON
+                     , Language.PowerQuery.AST.Annotation
                      , Language.PowerQuery.Lexer
                      , Language.PowerQuery.Parser
   -- other-modules:

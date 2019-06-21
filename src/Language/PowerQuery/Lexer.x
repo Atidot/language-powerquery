@@ -9,7 +9,7 @@ import "base"        Data.Data (Data)
 import "base"        Control.Monad.IO.Class (liftIO)
 import "text"        Data.Text (Text, pack)
 import "monad-loops" Control.Monad.Loops (whileJust)
-import               Language.PowerQuery.Token
+import               Language.PowerQuery.AST.Token
 }
 
 %wrapper "monad"

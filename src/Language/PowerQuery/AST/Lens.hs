@@ -5,11 +5,11 @@
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE RankNTypes #-}
 
-module Language.PowerQuery.Lens where
+module Language.PowerQuery.AST.Lens where
 
 import "lens" Control.Lens
-import        Language.PowerQuery.Token
-import        Language.PowerQuery.AST
+import        Language.PowerQuery.AST.Token
+import        Language.PowerQuery.AST.AST
 
 makeClassy ''Token
 makeClassy ''Literal
@@ -59,3 +59,7 @@ makeClassy ''ParameterSpecification
 makeClassy ''PrimitiveType
 makeClassy ''ErrorRaisingExpression
 makeClassy ''ErrorHandlingExpression
+makeClassy ''RecordLiteral
+makeClassy ''LiteralField
+makeClassy ''ListLiteral
+makeClassy ''AnyLiteral

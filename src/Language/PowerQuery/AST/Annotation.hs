@@ -1,10 +1,10 @@
 {-# LANGUAGE PackageImports #-}
 {-# LANGUAGE FlexibleInstances #-}
-module Language.PowerQuery.Annotation where
+module Language.PowerQuery.AST.Annotation where
 
 import "lens" Control.Lens
-import        Language.PowerQuery.Lens
-import        Language.PowerQuery.AST
+import        Language.PowerQuery.AST.Lens
+import        Language.PowerQuery.AST.AST
 
 data Annotation = Annotation
     deriving (Show, Read)

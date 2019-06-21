@@ -1,7 +1,7 @@
 {-# LANGUAGE PackageImports #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DeriveDataTypeable #-}
-module Language.PowerQuery.Token where
+module Language.PowerQuery.AST.Token where
 
 import "base" GHC.Generics  (Generic)
 import "base" Data.Typeable (Typeable)
@@ -21,7 +21,8 @@ data Token
 
 -- 12.1.5 Literals
 data Literal
-    = Integer' Integer
+    = Logical' Bool
+    | Integer' Integer
     | Float'   Float
     | String'  Text
     | Null

@@ -4,12 +4,13 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FunctionalDependencies #-}
 
-module Language.PowerQuery.JSON where
+
+module Language.PowerQuery.AST.JSON where
 
 import "text"  Data.Text (Text)
 import "aeson" Data.Aeson
-import         Language.PowerQuery.Token
-import         Language.PowerQuery.AST
+import         Language.PowerQuery.AST.Token
+import         Language.PowerQuery.AST.AST
 
 instance ToJSON Token
 instance ToJSON Literal
@@ -60,6 +61,10 @@ instance (ToJSON a) => ToJSON (ParameterSpecification a)
 instance               ToJSON PrimitiveType
 instance (ToJSON a) => ToJSON (ErrorRaisingExpression a)
 instance (ToJSON a) => ToJSON (ErrorHandlingExpression a)
+instance (ToJSON a) => ToJSON (RecordLiteral a)
+instance (ToJSON a) => ToJSON (LiteralField a)
+instance (ToJSON a) => ToJSON (ListLiteral a)
+instance (ToJSON a) => ToJSON (AnyLiteral a)
 
 
 instance FromJSON Token
@@ -111,3 +116,7 @@ instance (FromJSON a) => FromJSON (ParameterSpecification a)
 instance                 FromJSON PrimitiveType
 instance (FromJSON a) => FromJSON (ErrorRaisingExpression a)
 instance (FromJSON a) => FromJSON (ErrorHandlingExpression a)
+instance (FromJSON a) => FromJSON (RecordLiteral a)
+instance (FromJSON a) => FromJSON (LiteralField a)
+instance (FromJSON a) => FromJSON (ListLiteral a)
+instance (FromJSON a) => FromJSON (AnyLiteral a)

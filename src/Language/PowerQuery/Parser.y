@@ -9,9 +9,9 @@ import "base"        Data.Data (Data)
 import "base"        Control.Monad.IO.Class (liftIO)
 import "text"        Data.Text (Text, pack)
 import               Language.PowerQuery.Lexer
-import               Language.PowerQuery.Token
-import               Language.PowerQuery.Annotation
-import               Language.PowerQuery.AST
+import               Language.PowerQuery.AST.Token
+import               Language.PowerQuery.AST.Annotation
+import               Language.PowerQuery.AST.AST
 
 }
 
@@ -103,7 +103,43 @@ import               Language.PowerQuery.AST
 
 %%
 
+-- 12.2.1 - Documents
+document :: { Document Annotation }
+document
+    : section_document    { $1 }
+    | expression_document { $1 }
+
+-- 12.2.2 - Section Documents
+section_document :: { Document Annotation }
+section_document
+    : section { SectionDocument $1 }
+
+section :: { Section Annotation }
+section
+    : literal_attributes 'section' section_name ';' section_members { Section' (Just $1) (Just $3) $5 (Just Annotation) }
+
+section_name :: { Identifier }
+section_name
+    : 'identifier' { getIdent $1 }
+
+section_members :: { [SectionMember Annotation] }
+section_members
+    : section_member                 { [$1] }
+    | section_member section_members { $1:$2 }
+
+section_member :: { SectionMember Annotation }
+section_member
+    : literal_attributes 'shared' section_member_name '=' expression ';' { SectionMember (Just $1) True $3 $5 (Just Annotation) }
+
+section_member_name :: { Identifier }
+section_member_name
+    : 'identifier' { getIdent $1 }
+
 -- 12.2.3.1 - Expressions
+expression_document :: { Document Annotation }
+expression_document
+    : expression { ExpressionDocument $1 }
+
 expression :: { Expression Annotation }
 expression
     : logical_or_expression     { Logical $1       }
@@ -118,12 +154,12 @@ expression
 logical_or_expression :: { LogicalOrExpression Annotation }
 logical_or_expression
     : logical_and_expression                            { And'' $1 }
-    | logical_and_expression 'or' logical_or_expression { Or'   $1 $2 }
+    | logical_and_expression 'or' logical_or_expression { Or'   $1 $3 }
 
 logical_and_expression :: { LogicalAndExpression Annotation }
 logical_and_expression
     : is_expression                              { Is'''  $1 }
-    | logical_and_expression 'and' is_expression { And''' $1 }
+    | logical_and_expression 'and' is_expression { And''' $1 $3 }
 
 -- 12.2.3.3 - Is expression
 is_expression :: { IsExpression Annotation }
@@ -132,7 +168,7 @@ is_expression
     | is_expression 'is' nullable_primitive_type { Is'  $1 $3 }
 
 -- TODO: fix
-nullable_primitive_type :: { PrimitiveType }
+nullable_primitive_type :: { NullablePrimitiveType }
 nullable_primitive_type
     : 'nullable' primitive_type { NullablePrimitiveType $2 True }
 
@@ -470,22 +506,22 @@ primary_type
 
 primitive_type :: { PrimitiveType }
 primitive_type
-    : 'any'          { TAny          }
-    | 'anynonnull'   { TAnyNonNull   }
-    | 'binary'       { TBinary       }
-    | 'date'         { TDateTime     }
-    | 'datetimezone' { TDateTimezone }
-    | 'duration'     { TDuration     }
-    | 'function'     { TFunction     }
-    | 'list'         { TList         }
-    | 'logical'      { TLogical      }
-    | 'none'         { TNone         }
-    | 'null'         { TNull         }
-    | 'number'       { TNumber       }
-    | 'record'       { TRecord       }
-    | 'table'        { TTable        }
-    | 'text'         { TText         }
-    | 'type'         { TType         }
+    : 'any'          { TypeAny          }
+    | 'anynonnull'   { TypeAnyNonNull   }
+    | 'binary'       { TypeBinary       }
+    | 'date'         { TypeDateTime     }
+    | 'datetimezone' { TypeDateTimezone }
+    | 'duration'     { TypeDuration     }
+    | 'function'     { TypeFunction     }
+    | 'list'         { TypeList         }
+    | 'logical'      { TypeLogical      }
+    | 'none'         { TypeNone         }
+    | 'null'         { TypeNull         }
+    | 'number'       { TypeNumber       }
+    | 'record'       { TypeRecord       }
+    | 'table'        { TypeTable        }
+    | 'text'         { TypeText         }
+    | 'type'         { TypeType         }
 
 record_type :: { PrimaryType Annotation }
 record_type
@@ -497,7 +533,7 @@ list_type
 
 function_type :: { PrimaryType Annotation }
 function_type
-    : 'xxx'  { FunctionType undefined TAny Nothing }
+    : 'xxx'  { FunctionType undefined TypeAny Nothing }
 
 table_type :: { PrimaryType Annotation }
 table_type
@@ -528,6 +564,43 @@ otherwise_clause
 default_expression :: { Expression Annotation }
 default_expession
     : expression { $1 }
+
+-- 12.2.4 - Literal Attributes
+literal_attributes :: { RecordLiteral Annotation }
+literal_attributes
+    : record_literal { $1 }
+
+record_literal :: { RecordLiteral Annotation }
+record_literal
+    : '[' literal_field_list ']' { RecordLiteral $2 }
+
+literal_field_list :: { [LiteralField Annotation] }
+literal_field_list
+    : literal_field                        { [$1] }
+    | literal_field ',' literal_field_list { $1:$3 }
+
+literal_field :: { LiteralField Annotation }
+literal_field
+    : field_name '=' any_literal { LiteralField $1 $3 } 
+
+list_literal :: { ListLiteral Annotation }
+list_literal
+    : '{' literal_item_list '}' { ListLiteral $2 }
+
+literal_item_list :: { [AnyLiteral Annotation ] }
+literal_item_list
+    : any_literal ',' literal_item_list { $1:$3 }
+
+any_literal :: { AnyLiteral Annotation }
+any_literal
+    : record_literal  { Record' $1  }
+    | list_literal    { List' $1    }
+    | logical_literal { Literal' $1 }
+
+logical_literal :: { Literal }
+logical_literal
+    : 'true'  { Logical' True }
+    | 'false' { Logical' False }
 
 {
 parseError :: [Token] -> a

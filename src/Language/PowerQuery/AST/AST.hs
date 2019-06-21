@@ -2,15 +2,13 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 
-module Language.PowerQuery.AST where
+module Language.PowerQuery.AST.AST where
 
 import "base" GHC.Generics  (Generic)
 import "base" Data.Typeable (Typeable)
 import "base" Data.Data     (Data)
-import "text" Data.Text     (Text)
-import        Language.PowerQuery.Token
+import        Language.PowerQuery.AST.Token
 
-type Attributes = [Text]
 
 -- 12.2.1 Documents
 data Document annotation
@@ -22,8 +20,8 @@ data Document annotation
 -- 12.2.2 Section Documents
 data Section annotation
     = Section'
-    { _section_attributes :: !(Maybe Attributes)
-    , _section_name       :: !(Maybe Text)
+    { _section_attributes :: !(Maybe (RecordLiteral annotation))
+    , _section_name       :: !(Maybe Identifier)
     , _section_members    :: !([SectionMember annotation])
     , _section_annotation :: !(Maybe annotation)
     }
@@ -31,9 +29,9 @@ data Section annotation
 
 data SectionMember annotation
     = SectionMember
-    { _sectionMember_attributes :: !(Maybe Attributes)
+    { _sectionMember_attributes :: !(Maybe (RecordLiteral annotation))
     , _sectionMember_shared     :: !Bool
-    , _sectionMember_name       :: !Text
+    , _sectionMember_name       :: !Identifier
     , _sectionMember_expression :: !(Expression annotation)
     , _sectionMember_annotation :: !(Maybe annotation)
     }
@@ -401,23 +399,23 @@ data ParameterSpecification annotation
 
 
 data PrimitiveType
-    = TAny
-    | TAnyNonNull
-    | TBinary
-    | TDate
-    | TDateTime
-    | TDateTimezone
-    | TDuration
-    | TFunction
-    | TList
-    | TLogical
-    | TNone
-    | TNull
-    | TNumber
-    | TRecord
-    | TTable
-    | TText
-    | TType
+    = TypeAny
+    | TypeAnyNonNull
+    | TypeBinary
+    | TypeDate
+    | TypeDateTime
+    | TypeDateTimezone
+    | TypeDuration
+    | TypeFunction
+    | TypeList
+    | TypeLogical
+    | TypeNone
+    | TypeNull
+    | TypeNumber
+    | TypeRecord
+    | TypeTable
+    | TypeText
+    | TypeType
     deriving (Show, Read, Eq, Ord, Bounded, Data, Typeable, Generic)
 
 
@@ -437,3 +435,26 @@ data ErrorHandlingExpression annotation
     , _errorHandlingExpression_annotation :: !(Maybe annotation)
     }
     deriving (Show, Read, Eq, Data, Typeable, Generic)
+
+-- 12.2.4 Literal Attributes
+data RecordLiteral annotation
+    = RecordLiteral [LiteralField annotation]
+    deriving (Show, Read, Eq, Data, Typeable, Generic)
+
+data LiteralField annotation
+    = LiteralField
+    { _literalField_name    :: !Identifier
+    , _literalField_literal :: !(AnyLiteral annotation)
+    }
+    deriving (Show, Read, Eq, Data, Typeable, Generic)
+
+data ListLiteral annotation
+    = ListLiteral [AnyLiteral annotation]
+    deriving (Show, Read, Eq, Data, Typeable, Generic)
+
+data AnyLiteral annotation
+    = Record'  (RecordLiteral annotation)
+    | List'    (ListLiteral annotation)
+    | Literal' (Literal)
+    deriving (Show, Read, Eq, Data, Typeable, Generic)
+
