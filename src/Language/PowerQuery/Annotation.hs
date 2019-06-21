@@ -34,7 +34,6 @@ instance HasAnnotation (RecordExpression Annotation) where annotation = recordEx
 instance HasAnnotation (Field Annotation) where annotation = field_annotation
 instance HasAnnotation (ItemAccessExpression Annotation) where annotation = itemAccessExpression_annotation
 --instance HasAnnotation (FieldAccessExpression Annotation) where annotation = field
-instance HasAnnotation (SelectorList Annotation) where annotation = selectorList_annotation
 instance HasAnnotation (FieldSelector Annotation) where annotation = fieldSelector_annotation
 instance HasAnnotation (FunctionExpression Annotation) where annotation = functionExpression_annotation
 instance HasAnnotation (Parameter Annotation) where annotation = parameter_annotation

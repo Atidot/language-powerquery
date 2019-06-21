@@ -11,7 +11,6 @@ import "text" Data.Text     (Text)
 import        Language.PowerQuery.Token
 
 type Attributes = [Text]
-type ItemSelector = Text
 
 -- 12.2.1 Documents
 data Document annotation
@@ -45,7 +44,7 @@ data SectionMember annotation
 
 -- 12.2.3.1 Expressions
 data Expression annotation
-    = Logical       (LogicalExpression annotation)
+    = Logical       (LogicalOrExpression annotation)
     | Each'         (EachExpression annotation)
     | Function      (FunctionExpression annotation)
     | Let'          (LetExpression annotation)
@@ -56,48 +55,99 @@ data Expression annotation
 
 
 -- 12.2.3.2 Logical Expressions
-data LogicalExpression annotation
-    = AndExpression annotation
+data LogicalOrExpression annotation
+    = And'' (LogicalAndExpression annotation)
+    | Or'   (LogicalAndExpression annotation)
+            (LogicalOrExpression  annotation)
+    deriving (Show, Read, Eq, Data, Typeable, Generic)
+
+data LogicalAndExpression annotation
+    = Is'''  (IsExpression annotation)
+    | And''' (LogicalAndExpression annotation)
+             (IsExpression  annotation)
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 -- 12.2.3.3 Is expression
 data IsExpression annotation
-    = FDASFDSAFSA annotation
+    = As'' (AsExpression annotation)
+    | Is'  (IsExpression annotation) NullablePrimitiveType
+    deriving (Show, Read, Eq, Data, Typeable, Generic)
+
+data NullablePrimitiveType
+    = NullablePrimitiveType
+    { _nullablePrimitiveType_type :: !PrimitiveType
+    , _nullablePrimitiveType_nullable :: !Bool
+    }
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 -- 12.2.3.4 As expression
 data AsExpression annotation
-    = FDSAFDSAFAS annotation
+    = Equality (EqualityExpression annotation)
+    | As' (AsExpression annotation) NullablePrimitiveType
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 -- 12.2.3.5 Equality expression
 data EqualityExpression annotation
-    = LLLLLL annotation
+    = Relational (RelationalExpression annotation)
+    | EqR (RelationalExpression annotation)
+          (EqualityExpression annotation)
+    | NeqR (RelationalExpression annotation)
+           (EqualityExpression annotation)
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 -- 12.2.3.6 Relational jxpression
 data RelationalExpression annotation
-    = AAFDSAFSA annotation
+    = Additive (AdditiveExpression annotation)
+    | LtR      (AdditiveExpression annotation)
+               (RelationalExpression annotation)
+    | GtR      (AdditiveExpression annotation)
+               (RelationalExpression annotation)
+    | LeqR     (AdditiveExpression annotation)
+               (RelationalExpression annotation)
+    | GeqR     (AdditiveExpression annotation)
+               (RelationalExpression annotation)
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 -- 12.2.3.7 Arithmetic kxpression
-data ArithmeticExpression annotation
-    = FDASFSDAFSADFSAFD annotation
+data AdditiveExpression annotation
+    = Multiplicative (MultiplicativeExpression annotation)
+    | Plus'  (MultiplicativeExpression annotation)
+             (AdditiveExpression annotation)
+    | Minus' (MultiplicativeExpression annotation)
+             (AdditiveExpression annotation)
+    | And'   (MultiplicativeExpression annotation)
+             (AdditiveExpression annotation)
     deriving (Show, Read, Eq, Data, Typeable, Generic)
+
+data MultiplicativeExpression annotation
+    = Metadata (MetadataExpression annotation)
+    | Mult' (MetadataExpression annotation)
+            (MultiplicativeExpression annotation)
+    | Div'  (MetadataExpression annotation)
+            (MultiplicativeExpression annotation)
+    deriving (Show, Read, Eq, Data, Typeable, Generic)
+
 
 -- 12.2.3.8 Metadata expression
 data MetadataExpression annotation
-    = FDSAFSAFAS annotation
+    = MetadataExpression
+    { _metadataExpression_first      :: !(UnaryExpression annotation)
+    , _metadataExpression_second     :: !(Maybe (UnaryExpression annotation))
+    , _metadataExpression_annotation :: !(Maybe annotation)
+    }
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 -- 12.2.3.9 Unary expression
 data UnaryExpression annotation
-    = UnaryExpression annotation
+    = UnaryType  (TypeExpression annotation)
+    | UnaryPlus  (UnaryExpression annotation)
+    | UnaryMinus (UnaryExpression annotation)
+    | UnaryNot   (UnaryExpression annotation)
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 -- 12.2.3.10 Primary expression
 data PrimaryExpression annotation
-    = Literal        (LiteralExpression annotation)
+    = Literal       (LiteralExpression annotation)
     | List           (ListExpression annotation)
     | Record         (RecordExpression annotation)
     | Identifier'    (IdentifierExpression annotation)
@@ -145,7 +195,7 @@ data ParenthesizedExpression annotation
 
 -- 12.2.3.15 NotImplement expression
 data NotImplementedExpression annotation
-    = NotImplementExpression
+    = NotImplementedExpression
     { _notImplementedExpression_annotation :: !(Maybe annotation)
     }
     deriving (Show, Read, Eq, Data, Typeable, Generic)
@@ -169,7 +219,8 @@ data ListExpression annotation
 
 data Item annotation
     = Item
-    { _item_expression :: !(Expression annotation)
+    { _item_first  :: !(Expression annotation)
+    , _item_second :: !(Maybe (Expression annotation))
     , _item_annotation :: !(Maybe annotation)
     }
     deriving (Show, Read, Eq, Data, Typeable, Generic)
@@ -194,7 +245,7 @@ data Field annotation
 data ItemAccessExpression annotation
     = ItemAccessExpression
     { _itemAccessExpression_selection    :: !(PrimaryExpression annotation)
-    , _itemAccessExpression_itemSelector :: !ItemSelector
+    , _itemAccessExpression_itemSelector :: !(Expression annotation)
     , _itemAccessExpression_optional     :: !Bool
     , _itemAccessExpression_annotation   :: !(Maybe annotation)
     }
@@ -204,7 +255,7 @@ data ItemAccessExpression annotation
 -- 12.2.3.20 Field access expressions
 data FieldAccessExpression annotation
     = FieldSelection
-      { _fieldSelection_primary       :: !(Expression annotation)
+      { _fieldSelection_primary       :: !(PrimaryExpression annotation)
       , _fieldSelection_fieldSelector :: !(FieldSelector annotation)
       , _fieldSelection_anotation     :: !(Maybe annotation)
       }
@@ -213,14 +264,14 @@ data FieldAccessExpression annotation
       , _implicitTargetFieldSelection_annotation    :: !(Maybe annotation)
       }
     | Projection
-      { _projection_primary      :: !(Expression annotation)
+      { _projection_primary      :: !(PrimaryExpression annotation)
       , _projection_selectorList :: !([FieldSelector annotation])
       , _projection_optional     :: !Bool
       , _projection_annotation   :: !(Maybe annotation)
       }
     | ImplicitTargetProjection
-      { _implicitTargetProjection_selectorList :: !([FieldSelector annotation])
-      , _implicitTargetProjection_annotation   :: !(Maybe annotation)
+      { {-_implicitTargetProjection_selectorList :: !([FieldSelector annotation])-}
+      {-, -}_implicitTargetProjection_annotation   :: !(Maybe annotation)
       }
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 

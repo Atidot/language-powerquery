@@ -21,6 +21,7 @@ import               Language.PowerQuery.AST
 
 %token
     'identifier'    { TIdentifier _          }
+    'literal'       { TLiteral _             }
 
     'and'           { TKeyword And            }
     'as'            { TKeyword As             }
@@ -80,6 +81,7 @@ import               Language.PowerQuery.AST
     '...'           { TOperator ThreeDots    }
 
     'optional'     { TComment }
+    'nullable'     { TComment }
 
     'any'          { TComment }
     'anynonnull'   { TComment }
@@ -97,26 +99,172 @@ import               Language.PowerQuery.AST
     'table'        { TComment }
     'text'         { TComment }
     'xxx'   { TComment }
+    '!'     { TComment }
 
 %%
 
 -- 12.2.3.1 - Expressions
 expression :: { Expression Annotation }
 expression
-    : 'xxx' { Logical $ AndExpression Annotation }
+    : logical_or_expression     { Logical $1       }
+    | each_expression           { Each' $1         }
+    | function_expression       { Function $1      }
+    | let_expression            { Let' $1          }
+    | if_expression             { If' $1           }
+    | error_raising_expression  { ErrorRaising $1  }
+    | error_handling_expression { ErrorHandling $1 }
+
+-- 12.2.3.2 - Logical expressions
+logical_or_expression :: { LogicalOrExpression Annotation }
+logical_or_expression
+    : logical_and_expression                            { And'' $1 }
+    | logical_and_expression 'or' logical_or_expression { Or'   $1 $2 }
+
+logical_and_expression :: { LogicalAndExpression Annotation }
+logical_and_expression
+    : is_expression                              { Is'''  $1 }
+    | logical_and_expression 'and' is_expression { And''' $1 }
+
+-- 12.2.3.3 - Is expression
+is_expression :: { IsExpression Annotation }
+is_expression
+    : as_expression                              { As'' $1 }
+    | is_expression 'is' nullable_primitive_type { Is'  $1 $3 }
+
+-- TODO: fix
+nullable_primitive_type :: { PrimitiveType }
+nullable_primitive_type
+    : 'nullable' primitive_type { NullablePrimitiveType $2 True }
+
+-- 12.2.3.4 -- As expression
+as_expression :: { AsExpression Annotation }
+as_expression
+    : equality_expression { Equality $1 }
+    | as_expression 'as' nullable_primitive_type { As' $1 $3 }
+
+
+-- 12.2.3.5 -- Equality expression
+equality_expression :: { EqualityExpression Annotation }
+equality_expression
+    : relational_expression                          { Relational $1 }
+    | relational_expression '='  equality_expression { EqR  $1 $3    }
+    | relational_expression '<>' equality_expression { NeqR $1 $3    }
+
+-- 12.2.3.6 -- Relational expression
+relational_expression :: { RelationalExpression Annotation }
+relational_expression
+    : additive_expression                            { Additive $1 }
+    | additive_expression '<'  relational_expression { LtR  $1 $3  }
+    | additive_expression '>'  relational_expression { GtR  $1 $3  }
+    | additive_expression '<=' relational_expression { LeqR $1 $3  }
+    | additive_expression '>=' relational_expression { GeqR $1 $3  }
+
+-- 12.2.3.7 - Arithmetic expressions
+additive_expression :: { AdditiveExpression Annotation }
+additive_expression
+    : multiplicative_expression                         { Multiplicative $1 }
+    | multiplicative_expression '+' additive_expression { Plus' $1 $3 }
+    | multiplicative_expression '-' additive_expression { Minus' $1 $3 }
+    | multiplicative_expression '&' additive_expression { And' $1 $3 }
+
+multiplicative_expression :: { MultiplicativeExpression Annotation }
+multiplicative_expression
+    : metadata_expression { Metadata $1 }
+    | metadata_expression '*' multiplicative_expression { Mult' $1 $3 }
+    | metadata_expression '/' multiplicative_expression { Div'  $1 $3 }
+
+-- 12.2.3.8 - Metadata expression
+metadata_expression :: { MetadataExpression Annotation }
+metadata_expression
+    : unary_expression                         { MetadataExpression $1 Nothing   (Just Annotation) }
+    | unary_expression 'meta' unary_expression { MetadataExpression $1 (Just $3) (Just Annotation) }
 
 -- 12.2.3.9 - Unary expression
 unary_expression :: { UnaryExpression Annotation }
 unary_expression
-    : type_expression        { UnaryExpression Annotation }
-    | '+'   unary_expression { UnaryExpression Annotation }
-    | '-'   unary_expression { UnaryExpression Annotation }
-    | 'not' unary_expression { UnaryExpression Annotation }
+    : type_expression        { UnaryType  $1 }
+    | '+'   unary_expression { UnaryPlus  $2 }
+    | '-'   unary_expression { UnaryMinus $2 }
+    | 'not' unary_expression { UnaryNot   $2 }
 
 -- 12.2.3.10 - Primary expression
 primary_expression :: { PrimaryExpression Annotation }
 primary_expression
-    : 'xxx'   { Literal AndExpression }
+    : literal_expression         { Literal $1        }
+    | list_expression            { List $1           }
+    | record_expression          { Record $1         }
+    | identifier_expression      { Identifier' $1    }
+    | section_access_expression  { SectionAccess $1  }
+    | parenthesized_expression   { Parenthesized $1  }
+    | field_access_expression    { FieldAccess $1    }
+    | item_access_expression     { ItemAccess $1     }
+    | invoke_expression          { Invoke $1         }
+    | not_implemented_expression { NotImplemented $1 }
+
+
+
+-- 12.2.3.11 - Literal expression
+literal_expression :: { LiteralExpression Annotation }
+literal_expression
+    : 'literal' { LiteralExpression (getLiteral $1) (Just Annotation) }
+
+-- 12.2.3.12 - Identifier expression
+identifier_expression :: { IdentifierExpression Annotation }
+identifier_expression
+    : identifier_reference { $1 }
+
+identifier_reference :: { IdentifierExpression Annotation }
+identifier_reference
+    : exclusive_identifier_reference { $1 }
+    | inclusive_identifier_reference { $1 }
+
+exclusive_identifier_reference :: { IdentifierExpression Annotation }
+exclusive_identifier_reference
+    : 'identifier' { IdentifierExpression (getIdent $1) False (Just Annotation) }
+
+inclusive_identifier_reference :: { IdentifierExpression Annotation }
+inclusive_identifier_reference
+    : '@' 'identifier' { IdentifierExpression (getIdent $2) True (Just Annotation) }
+
+-- 12.2.3.13 - Section-access expression
+section_access_expression :: { SectionAccessExpression Annotation }
+section_access_expression
+    : 'identifier' '!' 'identifier' { SectionAccessExpression (getIdent $1) (getIdent $2) (Just Annotation) }
+
+-- 12.2.3.14 - Parenthesized expression
+parenthesized_expression :: { ParenthesizedExpression Annotation }
+parenthesized_expression
+    : '(' expression ')' { ParenthesizedExpression $2 (Just Annotation) }
+
+-- 12.2.3.15 - Not-implemented experssion
+not_implemented_expression :: { NotImplementedExpression Annotation }
+not_implemented_expression
+    : '...' { NotImplementedExpression (Just Annotation) }
+
+-- 12.2.3.16 - Invoke expression
+invoke_expression :: { InvokeExpression Annotation }
+invoke_expression
+    : primary_expression '(' argument_list ')' { InvokeExpression $1 $3 (Just Annotation) }
+
+argument_list :: { [Expression Annotation] }
+argument_list
+    : expression                   { [$1] }
+    | expression ',' argument_list { $1:$3 }
+
+-- 12.2.3.17 - List expression
+list_expression :: { ListExpression Annotation }
+list_expression
+    : '{' item_list '}' { ListExpression $2 (Just Annotation) }
+
+item_list :: { [Item Annotation] }
+item_list
+    : item               { [$1] }
+    | item ',' item_list { $1:$3 }
+
+item :: { Item Annotation }
+item
+    : expression                 { Item $1 Nothing   (Just Annotation) }
+    | expression '..' expression { Item $1 (Just $3) (Just Annotation) }
 
 -- 12.2.3.18 - Record expression
 record_expression :: { RecordExpression Annotation }
@@ -134,7 +282,7 @@ field
 
 field_name :: { Identifier }
 field_name
-    : 'identifier' { (\(TIdentifier ident) -> ident) $1 }
+    : 'identifier' { getIdent $1 }
 
 -- 12.2.3.19 - Item access expression
 item_access_expression :: { ItemAccessExpression Annotation }
@@ -181,9 +329,9 @@ optional_field_selector
     : '[' field_name ']' '?' { FieldSelector $2 True (Just Annotation) }
 
 
-implicit_target_field_selection :: { FieldSelector Annotation }
+implicit_target_field_selection :: { FieldAccessExpression Annotation }
 implicit_target_field_selection
-    : field_selector { $1 }
+    : field_selector { ImplicitTargetFieldSelection $1 (Just Annotation) }
 
 projection :: { FieldAccessExpression Annotation }
 projection
@@ -205,7 +353,7 @@ required_selector_list
 
 implicit_target_projection :: { FieldAccessExpression Annotation }
 implicit_target_projection
-    : 'identifier'   { Nothing }
+    : 'identifier'   { ImplicitTargetProjection Nothing }
 
 
 -- 12.2.3.21 - Function expression
@@ -234,7 +382,7 @@ parameter
 
 parameter_name :: { Identifier }
 parameter_name
-    : 'identifier' { (\(TIdentifier ident) -> ident) $1 }
+    : 'identifier' { getIdent $1 }
 
 parameter_type :: { Type Annotation }
 parameter_type
@@ -282,7 +430,7 @@ variable
 
 variable_name :: { Identifier }
 variable_name
-    : 'identifier' { (\(TIdentifier ident) -> ident) $1 }
+    : 'identifier' { getIdent $1 }
 
 -- 12.2.3.24 - If expression
 if_expression :: { IfExpression Annotation }
@@ -359,8 +507,38 @@ nullable_type :: { PrimaryType Annotation }
 nullable_type
     : 'xxx'  { NullableType undefined Nothing }
 
+-- 12.2.3.26 - Error raising expression
+error_raising_expression :: { ErrorRaisingExpression Annotation }
+error_raising_expression
+    : 'error' expression { ErrorRaisingExpression $2 (Just Annotation) }
+
+-- 12.2.3.27 - Error handling expression
+error_handling_expression :: { ErrorHandlingExpression Annotation }
+error_handling_expression
+    : 'try' protected_expression otherwise_clause { ErrorHandlingExpression $2 (Just $3) (Just Annotation) }
+
+protected_expression :: { Expression Annotation }
+protected_expression
+    : expression { $1 }
+
+otherwise_clause :: { Expression Annotation }
+otherwise_clause
+    : 'otherwise' default_expression { $2 }
+
+default_expression :: { Expression Annotation }
+default_expession
+    : expression { $1 }
+
 {
 parseError :: [Token] -> a
 parseError _ = error "Parse errror"
+
+getIdent :: Token -> Identifier
+getIdent (TIdentifier ident) = ident
+getIdent _ = error "Not a TIdentifier"
+
+getLiteral :: Token -> Literal
+getLiteral (TLiteral literal) = literal
+getLiteral _ = error "Not a TIdentifier"
 
 }

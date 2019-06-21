@@ -21,12 +21,14 @@ makeClassy ''Document
 makeClassy ''Section
 makeClassy ''SectionMember
 makeClassy ''Expression
-makeClassy ''LogicalExpression
+makeClassy ''LogicalOrExpression
+makeClassy ''LogicalAndExpression
 makeClassy ''IsExpression
 makeClassy ''AsExpression
 makeClassy ''EqualityExpression
 makeClassy ''RelationalExpression
-makeClassy ''ArithmeticExpression
+makeClassy ''AdditiveExpression
+makeClassy ''MultiplicativeExpression
 makeClassy ''MetadataExpression
 makeClassy ''UnaryExpression
 makeClassy ''PrimaryExpression
@@ -42,7 +44,6 @@ makeClassy ''RecordExpression
 makeClassy ''Field
 makeClassy ''ItemAccessExpression
 makeClassy ''FieldAccessExpression
-makeClassy ''SelectorList
 makeClassy ''FieldSelector
 makeClassy ''FunctionExpression
 makeClassy ''Parameter
