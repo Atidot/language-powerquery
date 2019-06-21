@@ -11,7 +11,6 @@ import "text" Data.Text     (Text)
 import        Language.PowerQuery.Token
 
 type Attributes = [Text]
-type FunctionBody = Text
 type ItemSelector = Text
 
 -- 12.2.1 Documents
@@ -23,7 +22,7 @@ data Document annotation
 
 -- 12.2.2 Section Documents
 data Section annotation
-    = Section
+    = Section'
     { _section_attributes :: !(Maybe Attributes)
     , _section_name       :: !(Maybe Text)
     , _section_members    :: !([SectionMember annotation])
@@ -47,10 +46,10 @@ data SectionMember annotation
 -- 12.2.3.1 Expressions
 data Expression annotation
     = Logical       (LogicalExpression annotation)
-    | Each          (EachExpression annotation)
+    | Each'         (EachExpression annotation)
     | Function      (FunctionExpression annotation)
-    | Let           (LetExpression annotation)
-    | If            (IfExpression annotation)
+    | Let'          (LetExpression annotation)
+    | If'           (IfExpression annotation)
     | ErrorRaising  (ErrorRaisingExpression annotation)
     | ErrorHandling (ErrorHandlingExpression annotation)
     deriving (Show, Read, Eq, Data, Typeable, Generic)
@@ -263,7 +262,7 @@ data Parameter annotation
 -- 12.2.3.22 Each expression
 data EachExpression annotation
     = EachExpression
-    { _eachExpression_body       :: !FunctionBody
+    { _eachExpression_body       :: !(Expression annotation)
     , _eachExpression_annotation :: !(Maybe annotation)
     }
     deriving (Show, Read, Eq, Data, Typeable, Generic)
@@ -305,7 +304,8 @@ data TypeExpression annotation
 
 data Type annotation
     = Type
-    { _type_annotation :: !(Maybe annotation)
+    { _type_primary    :: !(PrimaryType annotation)
+    , _type_annotation :: !(Maybe annotation)
     }
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
