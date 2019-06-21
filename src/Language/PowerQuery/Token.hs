@@ -21,16 +21,16 @@ data Token
 
 -- 12.1.5 Literals
 data Literal
-    = Integer'
-    | Float'
-    | String'
+    = Integer' Integer
+    | Float'   Float
+    | String'  Text
     | Null
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 -- 12.1.6 Identifiers
 data Identifier
-    = RegularIdentifier
-    | QuotedIdentifier
+    = RegularIdentifier Text
+    | QuotedIdentifier Text
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 -- 12.1.7 Keywords and predefined identifiers

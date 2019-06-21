@@ -93,7 +93,7 @@ data MetadataExpression annotation
 
 -- 12.2.3.9 Unary expression
 data UnaryExpression annotation
-    = FDASFSDAFAS annotation
+    = UnaryExpression annotation
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 -- 12.2.3.10 Primary expression
@@ -298,7 +298,7 @@ data IfExpression annotation
 -- 12.3.2.25 Type Expression
 data TypeExpression annotation
     = Primary (PrimaryExpression annotation)
-    | PrimaryType (Type annotation)
+    | PrimaryType' (PrimaryType annotation)
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 
@@ -372,7 +372,7 @@ data PrimitiveType
     | TNumber
     | TRecord
     | TTable
-    | Text
+    | TText
     | TType
     deriving (Show, Read, Eq, Ord, Bounded, Data, Typeable, Generic)
 

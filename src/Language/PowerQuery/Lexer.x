@@ -63,15 +63,24 @@ powerquery :-
   --==========
   -- 12.1.5 - number-literal
   <0> @decimal
-    | 0[xX] @hexadecimal     { mkL $ TLiteral Integer' }
+    | 0[xX] @hexadecimal     { mkInteger }
 
   <0> @decimal \. @decimal @exponent?
     | \. @decimal @exponent?
-    | @decimal @exponent     { mkL $ TLiteral Float' }
+    | @decimal @exponent     { mkFloat }
 
   --==========
   -- 12.1.5 - text-literal
-  <0> \" @string* \"         { mkL $ TLiteral String' }
+  <0> \" @string* \"         { mkString }
+
+  --==========
+  -- 12.1.5 - null-literal
+  <0> null                   { mkL $ TLiteral Null }
+
+  --==========
+  -- 12.1.6 - quoted-identifer
+  <0> \# \" @string* \"       { mkQuotedIdentifier }
+
 
   --==========
   -- 12.1.7 - Keywords and predefined identifiers
@@ -142,6 +151,37 @@ alexEOF = return (L undefined TEOF "")
 
 mkL :: Token -> AlexInput -> Int -> Alex Lexeme
 mkL c (p,_,_,str) len = return (L p c (take len str))
+
+
+mkInteger :: AlexInput -> Int -> Alex Lexeme
+mkInteger (p,_,_,str) len = return (L p (TLiteral $ Integer' value) match)
+    where
+        match :: String
+        match = take len str
+
+        value :: Integer
+        value = read match
+
+mkFloat :: AlexInput -> Int -> Alex Lexeme
+mkFloat (p,_,_,str) len = return (L p (TLiteral $ Float' value) match)
+    where
+        match :: String
+        match = take len str
+
+        value :: Float
+        value = read match
+
+mkString :: AlexInput -> Int -> Alex Lexeme
+mkString (p,_,_,str) len = return (L p (TLiteral $ String' (pack match)) match)
+    where
+        match :: String
+        match = take len str
+
+mkQuotedIdentifier :: AlexInput -> Int -> Alex Lexeme
+mkQuotedIdentifier (p,_,_,str) len = return (L p (TIdentifier $ QuotedIdentifier (pack match)) match)
+    where
+        match :: String
+        match = take len str
 
 scanner :: String -> Either String [Token]
 scanner str = runAlex str $ do
