@@ -113,7 +113,99 @@ unary_expression
     | '-'   unary_expression { UnaryExpression Annotation }
     | 'not' unary_expression { UnaryExpression Annotation }
 
--- 12.2.3.20 -- Field access expressions
+-- 12.2.3.10 - Primary expression
+primary_expression :: { PrimaryExpression Annotation }
+primary_expression
+    : 'xxx'   { Literal AndExpression }
+
+-- 12.2.3.18 - Record expression
+record_expression :: { RecordExpression Annotation }
+record_expression
+    : '[' field_list ']' { RecordExpression $2 (Just Annotation) }
+
+field_list :: { [Field Annotation] }
+field_list
+    : field                 { [$1] }
+    | field ',' field_list  { $1:$3 }
+
+field :: { Field Annotation }
+field
+    : field_name '=' expression { Field $1 $3 (Just Annotation) }
+
+field_name :: { Identifier }
+field_name
+    : 'identifier' { (\(TIdentifier ident) -> ident) $1 }
+
+-- 12.2.3.19 - Item access expression
+item_access_expression :: { ItemAccessExpression Annotation }
+item_access_expression
+    : item_selection           { $1 }
+    | optional_item_selection  { $1 }
+
+item_selection :: { ItemAccessExpression Annotation }
+item_selection
+    : primary_expression '{' item_selector '}' { ItemAccessExpression $1 $3 False (Just Annotation) }
+
+optional_item_selection :: { ItemAccessExpression Annotation }
+optional_item_selection
+    : primary_expression '{' item_selector '}' '?' { ItemAccessExpression $1 $3 True (Just Annotation) }
+
+-- 6.4.1 - Item Access
+item_selector :: { Expression Annotation }
+item_selector
+    : expression { $1 }
+
+-- 12.2.3.20 - Field access expressions
+field_access_expression :: { FieldAccessExpression Annotation }
+field_access_expression
+    : field_selection                 { $1 }
+    | implicit_target_field_selection { $1 }
+    | projection                      { $1 }
+    | implicit_target_projection      { $1 }
+
+field_selection :: { FieldAccessExpression Annotation }
+field_selection
+    : primary_expression field_selector { FieldSelection $1 $2 (Just Annotation) }
+
+field_selector :: { FieldSelector Annotation }
+field_selector
+    : required_field_selector { $1 }
+    | optional_field_selector { $1 }
+
+required_field_selector :: { FieldSelector Annotation }
+required_field_selector
+    : '[' field_name ']' { FieldSelector $2 False (Just Annotation) }
+
+optional_field_selector :: { FieldSelector Annotation }
+optional_field_selector
+    : '[' field_name ']' '?' { FieldSelector $2 True (Just Annotation) }
+
+
+implicit_target_field_selection :: { FieldSelector Annotation }
+implicit_target_field_selection
+    : field_selector { $1 }
+
+projection :: { FieldAccessExpression Annotation }
+projection
+    : primary_expression required_projection { Projection $1 $2 False (Just Annotation) }
+    | primary_expression optional_projection { Projection $1 $2 True  (Just Annotation) }
+
+required_projection :: { [FieldSelector Annotation] }
+required_projection
+    : '[' required_selector_list ']' { $2 }
+
+optional_projection :: { [FieldSelector Annotation] }
+optional_projection
+    : '[' required_selector_list ']' '?' { $2 }
+
+required_selector_list :: { [FieldSelector Annotation] }
+required_selector_list
+    : required_field_selector                            { [$1] }
+    | required_field_selector ',' required_selector_list { $1:$3 }
+
+implicit_target_projection :: { FieldAccessExpression Annotation }
+implicit_target_projection
+    : 'identifier'   { Nothing }
 
 
 -- 12.2.3.21 - Function expression

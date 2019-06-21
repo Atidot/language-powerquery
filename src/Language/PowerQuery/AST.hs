@@ -214,26 +214,19 @@ data FieldAccessExpression annotation
       }
     | Projection
       { _projection_primary      :: !(Expression annotation)
-      , _projection_selectorList :: !([SelectorList annotation])
+      , _projection_selectorList :: !([FieldSelector annotation])
       , _projection_optional     :: !Bool
       , _projection_annotation   :: !(Maybe annotation)
       }
     | ImplicitTargetProjection
-      { _implicitTargetProjection_selectorList :: !([SelectorList annotation])
+      { _implicitTargetProjection_selectorList :: !([FieldSelector annotation])
       , _implicitTargetProjection_annotation   :: !(Maybe annotation)
       }
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
-data SelectorList annotation
-    = SelectorList
-    { _selectorList_selectors  :: !([FieldSelector annotation])
-    , _selectorList_annotation :: !(Maybe annotation)
-    }
-    deriving (Show, Read, Eq, Data, Typeable, Generic)
-
 data FieldSelector annotation
     = FieldSelector
-    { _fieldSelector_fieldNames :: !Identifier
+    { _fieldSelector_fieldName  :: !Identifier
     , _fieldSelector_optional   :: !Bool
     , _fieldSelector_annotation :: !(Maybe annotation)
     }
