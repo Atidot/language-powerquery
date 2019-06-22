@@ -147,7 +147,8 @@ powerquery :-
 {
 data Lexeme = L AlexPosn Token String
 
-alexEOF = return (L undefined TEOF "")
+eOF = (L undefined TEOF "")
+alexEOF = return eOF
 
 mkL :: Token -> AlexInput -> Int -> Alex Lexeme
 mkL c (p,_,_,str) len = return (L p c (take len str))
@@ -183,8 +184,8 @@ mkQuotedIdentifier (p,_,_,str) len = return (L p (TIdentifier $ QuotedIdentifier
         match :: String
         match = take len str
 
-scanner :: String -> Either String [Token]
-scanner str = runAlex str $ do
+lexer :: String -> Either String [Token]
+lexer str = runAlex str $ do
     whileJust (notDone <$> alexMonadScan) $ \(L position token _) -> do
         return token
     where
@@ -194,5 +195,5 @@ scanner str = runAlex str $ do
 
 main = do
     s <- getContents
-    print (scanner s)
+    print (lexer s)
 }

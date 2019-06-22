@@ -343,12 +343,12 @@ data TypeExpression annotation
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 
-
 data Type annotation
-    = Type
-    { _type_primary    :: !(PrimaryType annotation)
-    , _type_annotation :: !(Maybe annotation)
-    }
+    = Parenthesized' (ParenthesizedExpression annotation)
+    | Type
+      { _type_primary    :: !(PrimaryType annotation)
+      , _type_annotation :: !(Maybe annotation)
+      }
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 

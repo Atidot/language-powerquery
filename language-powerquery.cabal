@@ -25,6 +25,7 @@ library
                      , Language.PowerQuery.AST.Annotation
                      , Language.PowerQuery.Lexer
                      , Language.PowerQuery.Parser
+                     , Language.PowerQuery.Main
   -- other-modules:
   -- other-extensions:
   build-tools: happy, alex

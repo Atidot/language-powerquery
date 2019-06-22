@@ -15,7 +15,103 @@ import               Language.PowerQuery.AST.AST
 
 }
 
-%name powerquery
+%name parseDocument                      document
+%name parseSectionDocument               section_document
+%name parseSection                       section
+%name parseSectionName                   section_name
+%name parseSectionMembers                section_members
+%name parseSectionMember                 section_member
+%name parseSectionMemberName             section_member_name
+%name parseExpressionDocument            expression_document
+%name parseExpression                    expression
+%name parseLogicalOrExpression           logical_or_expression
+%name parseLogicalAndExpression          logical_and_expression
+%name parseIsExpression                  is_expression
+%name parseNullalblePrimitiveType        nullable_primitive_type
+%name parseAsExpression                  as_expression
+%name parseEqualityExpression            equality_expression
+%name parseRelationalExpression          relational_expression
+%name parseAdditiveExpression            additive_expression
+%name parseMultiplicativeExpression      multiplicative_expression
+%name pareseMetadataExpression           metadata_expression
+%name parseUnaryExpression               unary_expression
+%name parsePrimaryExpression             primary_expression
+%name parseLiteralExpression             literal_expression
+%name parseIdentifierExpression          identifier_expression
+%name parseIdentifierReference           identifier_reference
+%name parseExclusiveIdentifierReference  exclusive_identifier_reference
+%name parseInclusiveIdentifierReference  inclusive_identifier_reference
+%name parseSectionAccessExpression       section_access_expression
+%name parseParenthesizedExpression       parenthesized_expression
+%name parseNotImplementedExpression      not_implemented_expression
+%name parseInvokeExpression              invoke_expression
+%name parseArgumentList                  argument_list
+%name parseListExpression                list_expression
+%name parseItemList                      item_list
+%name parseItem                          item
+%name parseRecordExpression              record_expression
+%name parseFieldList                     field_list
+%name parseField                         field
+%name parseFieldName                     field_name
+%name parseItemAccessExpression          item_access_expression
+%name parseItemSelection                 item_selection
+%name parseOptionalItemSelection         optional_item_selection
+%name parseItemSelector                  item_selector
+%name parseFieldAccessExpression         field_access_expression
+%name parseFieldSelection                field_selection
+%name parseFieldSelector                 field_selector
+%name parseRequiredFieldSelector         required_field_selector
+%name parseOptionalFieldSelector         optional_field_selector
+%name parseImplicitTargetFieldSelection  implicit_target_field_selection
+%name parseProjection                    projection
+%name parseRequiredProjection            required_projection
+%name parseOptionalProjection            optional_projection
+%name parseRequiredSelectorList          required_selector_list
+%name parseImplicitTargetProjection      implicit_target_projection
+%name parseFunctionExpression            function_expression
+%name parseFunctionBody                  function_body
+%name parseParameterList                 parameter_list
+%name parseFixedParameterList            fixed_parameter_list
+%name parseParameter                     parameter
+%name parseParameterName                 parameter_name
+%name parseParameterType                 parameter_type
+%name parseReturnType                    return_type
+%name parseAssertion                     assertion
+%name parseOptionalParameterList         optional_parameter_list
+%name parseOptionalParameter             optional_parameter
+%name parseEachExpression                each_expression
+%name parseEachExpressionBody            each_expression_body
+%name parseLetExpression                 let_expression
+%name parseVariableList                  variable_list
+%name parseVariable                      variable
+%name parseVariableName                  variable_name
+%name parseIfExpression                  if_expression
+%name parseIfCondition                   if_condition
+%name parseTrueExpression                true_expression
+%name parseFalseExpression               false_expression
+%name parseTypeExpression                type_expression
+%name parseType                          type
+%name parsePrimaryType                   primary_type
+%name parsePrimitiveType                 primitive_type
+%name parseRecordType                    record_type
+%name parseListType                      list_type
+%name parseFunctionType                  function_type
+%name parseTableType                     table_type
+%name parseNullableType                  nullable_type
+%name parseErrorRaisingExpression        error_raising_expression
+%name parseErrorHandlingExpression       error_handling_expression
+%name parseProtectedExpression           protected_expression
+%name parseOtherwiseClause               otherwise_clause
+%name parseDefaultExpression             default_expression
+%name parseLiteralAttributes             literal_attributes
+%name parseRecordLiteral                 record_literal
+%name parseLiteralFieldList              literal_field_list
+%name parseLiteralField                  literal_field
+%name parseListLiteral                   list_literal
+%name parseLiteramItemList               literal_item_list
+%name parseAnyLiteral                    any_literal
+%name parseLogicalLiteral                logical_literal
+
 %tokentype { Token }
 %error { parseError }
 
@@ -489,11 +585,13 @@ false_expression
 -- 12.2.3.25 -- Type expression
 type_expression :: { TypeExpression Annotation }
 type_expression
-    : 'type' primary_type { PrimaryType' $2 }
+    : primary_expression  { Primary      $1 }
+    | 'type' primary_type { PrimaryType' $2 }
 
 type :: { Type Annotation }
 type
-    : primary_type { Type $1 (Just Annotation) }
+    : parenthesized_expression { Parenthesized' $1 }
+    | primary_type             { Type $1 (Just Annotation) }
 
 primary_type :: { PrimaryType Annotation }
 primary_type
@@ -603,8 +701,10 @@ logical_literal
     | 'false' { Logical' False }
 
 {
+lexwrap = (alexMonadScan >>=)
+
 parseError :: [Token] -> a
-parseError _ = error "Parse errror"
+parseError ts = error $ "Parse errror " <> show ts
 
 getIdent :: Token -> Identifier
 getIdent (TIdentifier ident) = ident
