@@ -33,7 +33,7 @@ import               Language.PowerQuery.AST.AST
 %name parseRelationalExpression          relational_expression
 %name parseAdditiveExpression            additive_expression
 %name parseMultiplicativeExpression      multiplicative_expression
-%name pareseMetadataExpression           metadata_expression
+%name parseMetadataExpression           metadata_expression
 %name parseUnaryExpression               unary_expression
 %name parsePrimaryExpression             primary_expression
 %name parseLiteralExpression             literal_expression

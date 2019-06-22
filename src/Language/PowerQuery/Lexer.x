@@ -193,7 +193,7 @@ lexer str = runAlex str $ do
         notDone (L _ TEOF _) = Nothing
         notDone x            = Just x
 
-main = do
+main' = do
     s <- getContents
     print (lexer s)
 }
