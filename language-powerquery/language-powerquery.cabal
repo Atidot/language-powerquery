@@ -18,12 +18,7 @@ category:            Language
 extra-source-files:  CHANGELOG.md
 
 library
-  exposed-modules:     Language.PowerQuery.AST.Token
-                     , Language.PowerQuery.AST.AST
-                     , Language.PowerQuery.AST.Lens
-                     , Language.PowerQuery.AST.JSON
-                     , Language.PowerQuery.AST.Annotation
-                     , Language.PowerQuery.Lexer
+  exposed-modules:     Language.PowerQuery.Lexer
                      , Language.PowerQuery.Parser
                      , Language.PowerQuery.Main
   -- other-modules:
@@ -31,12 +26,14 @@ library
   build-tools: happy, alex
   build-depends:       base
                      , lens
+                     , uniplate
                      , aeson
                      , text
                      , array
                      , monad-loops
                      , attoparsec
                      , parsec
+                     , language-powerquery-ast
   hs-source-dirs:      src
   default-language:    Haskell2010
 
@@ -46,6 +43,7 @@ test-suite parser-test
   main-is:          Spec.hs
   build-depends:    base
                   , hspec
+                  , language-powerquery-ast
                   , language-powerquery
   ghc-options:      -Wall
   default-language: Haskell2010
@@ -55,6 +53,7 @@ executable language-powerquery
   -- other-modules:
   -- other-extensions:
   build-depends:       base
+                     , language-powerquery-ast
                      , language-powerquery
   hs-source-dirs:      app
   default-language:    Haskell2010

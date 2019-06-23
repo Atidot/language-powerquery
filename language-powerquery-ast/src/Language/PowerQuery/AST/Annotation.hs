@@ -1,13 +1,18 @@
 {-# LANGUAGE PackageImports #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE FlexibleInstances #-}
 module Language.PowerQuery.AST.Annotation where
 
+import "base" GHC.Generics  (Generic)
+import "base" Data.Typeable (Typeable)
+import "base" Data.Data (Data)
 import "lens" Control.Lens
 import        Language.PowerQuery.AST.Lens
 import        Language.PowerQuery.AST.AST
 
 data Annotation = Annotation
-    deriving (Show, Read)
+    deriving (Show, Read, Data, Typeable, Generic)
 
 class HasAnnotation a where
     annotation :: Lens' a (Maybe Annotation)

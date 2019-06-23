@@ -485,7 +485,7 @@ required_selector_list
 
 implicit_target_projection :: { FieldAccessExpression Annotation }
 implicit_target_projection
-    : 'identifier'   { ImplicitTargetProjection Nothing }
+    : 'identifier'   { ImplicitTargetProjection (getIdent $1) (Just Annotation) }
 
 
 -- 12.2.3.21 - Function expression

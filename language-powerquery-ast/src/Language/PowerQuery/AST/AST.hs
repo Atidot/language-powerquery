@@ -268,8 +268,8 @@ data FieldAccessExpression annotation
       , _projection_annotation   :: !(Maybe annotation)
       }
     | ImplicitTargetProjection
-      { {-_implicitTargetProjection_selectorList :: !([FieldSelector annotation])-}
-      {-, -}_implicitTargetProjection_annotation   :: !(Maybe annotation)
+      { _implicitTargetProjection_identifier   :: !Identifier
+      , _implicitTargetProjection_annotation   :: !(Maybe annotation)
       }
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
