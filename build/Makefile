@@ -1,0 +1,9 @@
+build:
+	nix-build
+
+shell:
+	nix-shell
+
+cabal2nix:
+	cabal2nix ../language-powerquery-ast > language-powerquery-ast.nix
+	cabal2nix ../language-powerquery     > language-powerquery.nix
