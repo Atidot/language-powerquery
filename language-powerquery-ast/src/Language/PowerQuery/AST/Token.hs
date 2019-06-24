@@ -17,7 +17,7 @@ data Token
     | TKeyword    Keyword
     | TOperator   Operator
     | TEOF
-    deriving (Show, Eq, Data, Typeable, Generic)
+    deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 -- 12.1.5 Literals
 data Literal
@@ -67,43 +67,10 @@ data Keyword
     | H_Shared
     | H_Table
     | H_Time
-    deriving (Eq, Ord, Enum, Bounded, Data, Typeable, Generic)
+    deriving (Show, Read, Eq, Ord, Enum, Bounded, Data, Typeable, Generic)
 
 keywords :: [Keyword]
 keywords = [toEnum 0 .. ]
-
-instance Show Keyword where
-    show And       = "and"
-    show As        = "as"
-    show Each      = "each"
-    show Else      = "else"
-    show Error     = "error"
-    show False'    = "false"
-    show If        = "if"
-    show In        = "in"
-    show Is        = "is"
-    show Let       = "let"
-    show Meta      = "meta"
-    show Not       = "not"
-    show Otherwise = "otherwise"
-    show Or        = "or"
-    show Section   = "section"
-    show Shared    = "shared"
-    show Then      = "then"
-    show True'     = "true"
-    show Try       = "try"
-    show Type'     = "type"
-    show H_Binary       = "#binary"
-    show H_Date         = "#date"
-    show H_DateTime     = "#datetime"
-    show H_DateTimezone = "#datetimezone"
-    show H_Duration     = "#duration"
-    show H_Infinity     = "#infinity"
-    show H_Nan          = "#nan"
-    show H_Sections     = "#sections"
-    show H_Shared       = "#shared"
-    show H_Table        = "#table"
-    show H_Time         = "#time"
 
 
 -- 12.1.8 Operators and punctuators
@@ -132,34 +99,7 @@ data Operator
     | Arrow
     | TwoDots
     | ThreeDots
-    deriving (Eq, Ord, Enum, Bounded, Data, Typeable, Generic)
+    deriving (Show, Read, Eq, Ord, Enum, Bounded, Data, Typeable, Generic)
 
 operators :: [Operator]
 operators = [toEnum 0 .. ]
-
-instance Show Operator where
-    show Comma        = ","
-    show SemiColon    = ";"
-    show Equal        = "="
-    show LT'          = "<"
-    show LEQ          = "<="
-    show GT'          = ">"
-    show GEQ          = ">="
-    show NEQ          = "<>"
-    show Plus         = "+"
-    show Minus        = "-"
-    show Mult         = "*"
-    show Div          = "/"
-    show Ampersand    = "&"
-    show LeftParen    = "("
-    show RightParen   = ")"
-    show LeftBracket  = "["
-    show RightBracket = "]"
-    show LeftCurly    = "{"
-    show RightCurly   = "}"
-    show At           = "@"
-    show QMark        = "?"
-    show Arrow        = "=>"
-    show TwoDots      = ".."
-    show ThreeDots    = "..."
-
