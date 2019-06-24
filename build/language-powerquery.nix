@@ -1,6 +1,6 @@
 { mkDerivation, aeson, alex, array, base, happy, hspec
-, language-powerquery-ast, lens, monad-loops, stdenv, text
-, uniplate
+, language-powerquery-ast, lens, monad-loops, optparse-applicative
+, stdenv, text, uniplate
 }:
 mkDerivation {
   pname = "language-powerquery";
@@ -13,7 +13,9 @@ mkDerivation {
     uniplate
   ];
   libraryToolDepends = [ alex happy ];
-  executableHaskellDepends = [ base language-powerquery-ast ];
+  executableHaskellDepends = [
+    base language-powerquery-ast optparse-applicative
+  ];
   testHaskellDepends = [ base hspec language-powerquery-ast ];
   homepage = "github.com/atidot/language-powerquery";
   description = "PowerQuery Parser";

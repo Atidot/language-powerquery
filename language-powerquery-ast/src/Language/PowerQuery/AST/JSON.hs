@@ -3,11 +3,11 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FunctionalDependencies #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 
 module Language.PowerQuery.AST.JSON where
 
-import "text"  Data.Text (Text)
 import "aeson" Data.Aeson
 import         Language.PowerQuery.AST.Token
 import         Language.PowerQuery.AST.AST

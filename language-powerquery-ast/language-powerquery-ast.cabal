@@ -23,11 +23,15 @@ library
                      , Language.PowerQuery.AST.Lens
                      , Language.PowerQuery.AST.JSON
                      , Language.PowerQuery.AST.Annotation
+                     , Language.PowerQuery.AST.Arbitrary
   build-depends:       base
                      , lens
                      , aeson
                      , text
+                     , generic-arbitrary
+                     , quickcheck-text
   hs-source-dirs:      src
+  ghc-options:         -Wall
   default-language:    Haskell2010
 
 test-suite language-powerquery-ast-test

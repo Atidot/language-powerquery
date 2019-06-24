@@ -4,12 +4,12 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE RankNTypes #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Language.PowerQuery.AST.Lens where
 
 import "base" Data.Data (Data)
 import "lens" Control.Lens
-import "lens" Control.Lens.Plated
 import        Language.PowerQuery.AST.Token
 import        Language.PowerQuery.AST.AST
 
