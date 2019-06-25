@@ -58,7 +58,7 @@ powerquery :-
   <0> $white+  { skip }
 
   -- 12.1.2 - Comment
-  <0> "//".*   { mkL TComment }
+  <0> "//".*   { mkL CommentT }
 
   --==========
   -- 12.1.5 - number-literal
@@ -75,7 +75,7 @@ powerquery :-
 
   --==========
   -- 12.1.5 - null-literal
-  <0> null                   { mkL $ TLiteral Null }
+  <0> null                   { mkL $ LiteralT NullL }
 
   --==========
   -- 12.1.6 - quoted-identifer
@@ -84,70 +84,70 @@ powerquery :-
 
   --==========
   -- 12.1.7 - Keywords and predefined identifiers
-  "and"            { mkL $ TKeyword And }
-  "as"             { mkL $ TKeyword As }
-  "each"           { mkL $ TKeyword Each }
-  "else"           { mkL $ TKeyword Else }
-  "error"          { mkL $ TKeyword Error }
-  "false"          { mkL $ TKeyword False' }
-  "if"             { mkL $ TKeyword If }
-  "in"             { mkL $ TKeyword In }
-  "is"             { mkL $ TKeyword Is }
-  "let"            { mkL $ TKeyword Let }
-  "meta"           { mkL $ TKeyword Meta }
-  "not"            { mkL $ TKeyword Not }
-  "otherwise"      { mkL $ TKeyword Otherwise }
-  "or"             { mkL $ TKeyword Or }
-  "section"        { mkL $ TKeyword Section }
-  "shared"         { mkL $ TKeyword Shared }
-  "then"           { mkL $ TKeyword Then }
-  "true"           { mkL $ TKeyword True' }
-  "try"            { mkL $ TKeyword Try }
-  "type"           { mkL $ TKeyword Type' }
-  "#binary"        { mkL $ TKeyword H_Binary }
-  "#date"          { mkL $ TKeyword H_Date }
-  "#datetime"      { mkL $ TKeyword H_DateTime }
-  "#datetimezone"  { mkL $ TKeyword H_DateTimezone }
-  "#duration"      { mkL $ TKeyword H_Duration }
-  "#infinity"      { mkL $ TKeyword H_Infinity }
-  "#nan"           { mkL $ TKeyword H_Nan }
-  "#sections"      { mkL $ TKeyword H_Sections }
-  "#shared"        { mkL $ TKeyword H_Shared }
-  "#table"         { mkL $ TKeyword H_Table }
-  "#time"          { mkL $ TKeyword H_Time }
+  "and"            { mkL $ KeywordT AndK }
+  "as"             { mkL $ KeywordT AsK }
+  "each"           { mkL $ KeywordT EachK }
+  "else"           { mkL $ KeywordT ElseK }
+  "error"          { mkL $ KeywordT ErrorK }
+  "false"          { mkL $ KeywordT FalseK }
+  "if"             { mkL $ KeywordT IfK }
+  "in"             { mkL $ KeywordT InK }
+  "is"             { mkL $ KeywordT IsK }
+  "let"            { mkL $ KeywordT LetK }
+  "meta"           { mkL $ KeywordT MetaK }
+  "not"            { mkL $ KeywordT NotK }
+  "otherwise"      { mkL $ KeywordT OtherwiseK }
+  "or"             { mkL $ KeywordT OrK }
+  "section"        { mkL $ KeywordT SectionK }
+  "shared"         { mkL $ KeywordT SharedK }
+  "then"           { mkL $ KeywordT ThenK }
+  "true"           { mkL $ KeywordT TrueK }
+  "try"            { mkL $ KeywordT TryK }
+  "type"           { mkL $ KeywordT TypeK }
+  "#binary"        { mkL $ KeywordT H_BinaryK }
+  "#date"          { mkL $ KeywordT H_DateK }
+  "#datetime"      { mkL $ KeywordT H_DateTimeK }
+  "#datetimezone"  { mkL $ KeywordT H_DateTimezoneK }
+  "#duration"      { mkL $ KeywordT H_DurationK }
+  "#infinity"      { mkL $ KeywordT H_InfinityK }
+  "#nan"           { mkL $ KeywordT H_NanK }
+  "#sections"      { mkL $ KeywordT H_SectionsK }
+  "#shared"        { mkL $ KeywordT H_SharedK }
+  "#table"         { mkL $ KeywordT H_TableK }
+  "#time"          { mkL $ KeywordT H_TimeK }
 
 
   --==========
   -- 12.1.8 - Operators and punctuators
-  ","   { mkL $ TOperator Comma }
-  ";"   { mkL $ TOperator SemiColon }
-  "="   { mkL $ TOperator Equal }
-  "<"   { mkL $ TOperator LT' }
-  "<="  { mkL $ TOperator LEQ }
-  ">"   { mkL $ TOperator GT' }
-  ">="  { mkL $ TOperator GEQ }
-  "<>"  { mkL $ TOperator NEQ }
-  "+"   { mkL $ TOperator Plus }
-  "-"   { mkL $ TOperator Minus }
-  "*"   { mkL $ TOperator Mult }
-  "/"   { mkL $ TOperator Div }
-  "&"   { mkL $ TOperator Ampersand }
-  "("   { mkL $ TOperator LeftParen }
-  ")"   { mkL $ TOperator RightParen }
-  "["   { mkL $ TOperator LeftBracket }
-  "]"   { mkL $ TOperator RightBracket }
-  "{"   { mkL $ TOperator LeftCurly }
-  "}"   { mkL $ TOperator RightCurly }
-  "@"   { mkL $ TOperator At }
-  "?"   { mkL $ TOperator QMark }
-  "=>"  { mkL $ TOperator Arrow }
-  ".."  { mkL $ TOperator TwoDots }
-  "..." { mkL $ TOperator ThreeDots }
+  ","   { mkL $ OperatorT CommaO }
+  ";"   { mkL $ OperatorT SemiColonO }
+  "="   { mkL $ OperatorT EqualO }
+  "<"   { mkL $ OperatorT LT_O }
+  "<="  { mkL $ OperatorT LEQ_O }
+  ">"   { mkL $ OperatorT GT_O }
+  ">="  { mkL $ OperatorT GEQ_O }
+  "<>"  { mkL $ OperatorT NEQ_O }
+  "+"   { mkL $ OperatorT PlusO }
+  "-"   { mkL $ OperatorT MinusO }
+  "*"   { mkL $ OperatorT MultO }
+  "/"   { mkL $ OperatorT DivO }
+  "&"   { mkL $ OperatorT AmpersandO }
+  "("   { mkL $ OperatorT LeftParenO }
+  ")"   { mkL $ OperatorT RightParenO }
+  "["   { mkL $ OperatorT LeftBracketO }
+  "]"   { mkL $ OperatorT RightBracketO }
+  "{"   { mkL $ OperatorT LeftCurlyO }
+  "}"   { mkL $ OperatorT RightCurlyO }
+  "@"   { mkL $ OperatorT AtO }
+  "?"   { mkL $ OperatorT QMarkO }
+  "=>"  { mkL $ OperatorT ArrowO }
+  ".."  { mkL $ OperatorT TwoDotsO }
+  "..." { mkL $ OperatorT ThreeDotsO }
 
 {
 data Lexeme = L AlexPosn Token String
 
-eOF = (L undefined TEOF "")
+eOF = (L undefined EOF_T "")
 alexEOF = return eOF
 
 mkL :: Token -> AlexInput -> Int -> Alex Lexeme
@@ -155,7 +155,7 @@ mkL c (p,_,_,str) len = return (L p c (take len str))
 
 
 mkInteger :: AlexInput -> Int -> Alex Lexeme
-mkInteger (p,_,_,str) len = return (L p (TLiteral $ Integer' value) match)
+mkInteger (p,_,_,str) len = return (L p (LiteralT $ IntegerL value) match)
     where
         match :: String
         match = take len str
@@ -164,7 +164,7 @@ mkInteger (p,_,_,str) len = return (L p (TLiteral $ Integer' value) match)
         value = read match
 
 mkFloat :: AlexInput -> Int -> Alex Lexeme
-mkFloat (p,_,_,str) len = return (L p (TLiteral $ Float' value) match)
+mkFloat (p,_,_,str) len = return (L p (LiteralT $ FloatL value) match)
     where
         match :: String
         match = take len str
@@ -173,13 +173,13 @@ mkFloat (p,_,_,str) len = return (L p (TLiteral $ Float' value) match)
         value = read match
 
 mkString :: AlexInput -> Int -> Alex Lexeme
-mkString (p,_,_,str) len = return (L p (TLiteral $ String' (pack match)) match)
+mkString (p,_,_,str) len = return (L p (LiteralT $ StringL (pack match)) match)
     where
         match :: String
         match = take len str
 
 mkQuotedIdentifier :: AlexInput -> Int -> Alex Lexeme
-mkQuotedIdentifier (p,_,_,str) len = return (L p (TIdentifier $ QuotedIdentifier (pack match)) match)
+mkQuotedIdentifier (p,_,_,str) len = return (L p (IdentifierT $ QuotedI (pack match)) match)
     where
         match :: String
         match = take len str
@@ -190,7 +190,7 @@ lexer str = runAlex str $ do
         return token
     where
         notDone :: Lexeme -> Maybe Lexeme
-        notDone (L _ TEOF _) = Nothing
+        notDone (L _ EOF_T _) = Nothing
         notDone x            = Just x
 
 main' = do

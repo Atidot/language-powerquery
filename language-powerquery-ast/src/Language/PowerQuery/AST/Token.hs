@@ -10,63 +10,63 @@ import "text" Data.Text     (Text)
 
 -- 12.1.3 Tokens
 data Token
-    = TWhitespace
-    | TComment
-    | TLiteral    Literal
-    | TIdentifier Identifier
-    | TKeyword    Keyword
-    | TOperator   Operator
-    | TEOF
+    = WhitespaceT
+    | CommentT
+    | LiteralT    Literal
+    | IdentifierT Identifier
+    | KeywordT    Keyword
+    | OperatorT   Operator
+    | EOF_T
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 -- 12.1.5 Literals
 data Literal
-    = Logical' Bool
-    | Integer' Integer
-    | Float'   Float
-    | String'  Text
-    | Null
+    = LogicalL Bool
+    | IntegerL Integer
+    | FloatL   Float
+    | StringL  Text
+    | NullL
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 -- 12.1.6 Identifiers
 data Identifier
-    = RegularIdentifier Text
-    | QuotedIdentifier Text
+    = RegularI Text
+    | QuotedI  Text
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 -- 12.1.7 Keywords and predefined identifiers
 data Keyword
-    = And
-    | As
-    | Each
-    | Else
-    | Error
-    | False'
-    | If
-    | In
-    | Is
-    | Let
-    | Meta
-    | Not
-    | Otherwise
-    | Or
-    | Section
-    | Shared
-    | Then
-    | True'
-    | Try
-    | Type'
-    | H_Binary
-    | H_Date
-    | H_DateTime
-    | H_DateTimezone
-    | H_Duration
-    | H_Infinity
-    | H_Nan
-    | H_Sections
-    | H_Shared
-    | H_Table
-    | H_Time
+    = AndK
+    | AsK
+    | EachK
+    | ElseK
+    | ErrorK
+    | FalseK
+    | IfK
+    | InK
+    | IsK
+    | LetK
+    | MetaK
+    | NotK
+    | OtherwiseK
+    | OrK
+    | SectionK
+    | SharedK
+    | ThenK
+    | TrueK
+    | TryK
+    | TypeK
+    | H_BinaryK
+    | H_DateK
+    | H_DateTimeK
+    | H_DateTimezoneK
+    | H_DurationK
+    | H_InfinityK
+    | H_NanK
+    | H_SectionsK
+    | H_SharedK
+    | H_TableK
+    | H_TimeK
     deriving (Show, Read, Eq, Ord, Enum, Bounded, Data, Typeable, Generic)
 
 keywords :: [Keyword]
@@ -75,30 +75,30 @@ keywords = [toEnum 0 .. ]
 
 -- 12.1.8 Operators and punctuators
 data Operator
-    = Comma
-    | SemiColon
-    | Equal
-    | LT'
-    | LEQ
-    | GT'
-    | GEQ
-    | NEQ
-    | Plus
-    | Minus
-    | Mult
-    | Div
-    | Ampersand
-    | LeftParen
-    | RightParen
-    | LeftBracket
-    | RightBracket
-    | LeftCurly
-    | RightCurly
-    | At
-    | QMark
-    | Arrow
-    | TwoDots
-    | ThreeDots
+    = CommaO
+    | SemiColonO
+    | EqualO
+    | LT_O
+    | LEQ_O
+    | GT_O
+    | GEQ_O
+    | NEQ_O
+    | PlusO
+    | MinusO
+    | MultO
+    | DivO
+    | AmpersandO
+    | LeftParenO
+    | RightParenO
+    | LeftBracketO
+    | RightBracketO
+    | LeftCurlyO
+    | RightCurlyO
+    | AtO
+    | QMarkO
+    | ArrowO
+    | TwoDotsO
+    | ThreeDotsO
     deriving (Show, Read, Eq, Ord, Enum, Bounded, Data, Typeable, Generic)
 
 operators :: [Operator]

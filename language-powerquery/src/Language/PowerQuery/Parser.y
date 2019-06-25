@@ -116,86 +116,86 @@ import               Language.PowerQuery.AST.AST
 %error { parseError }
 
 %token
-    'identifier'    { TIdentifier _          }
-    'literal'       { TLiteral _             }
+    'identifier'    { IdentifierT _          }
+    'literal'       { LiteralT _             }
 
-    'and'           { TKeyword And            }
-    'as'            { TKeyword As             }
-    'each'          { TKeyword Each           }
-    'else'          { TKeyword Else           }
-    'error'         { TKeyword Error          }
-    'false'         { TKeyword False'         }
-    'if'            { TKeyword If             }
-    'in'            { TKeyword In             }
-    'is'            { TKeyword Is             }
-    'let'           { TKeyword Let            }
-    'meta'          { TKeyword Meta           }
-    'not'           { TKeyword Not            }
-    'otherwise'     { TKeyword Otherwise      }
-    'or'            { TKeyword Or             }
-    'section'       { TKeyword Section        }
-    'shared'        { TKeyword Shared         }
-    'then'          { TKeyword Then           }
-    'true'          { TKeyword True'          }
-    'try'           { TKeyword Try            }
-    'type'          { TKeyword Type'          }
-    '#binary'       { TKeyword H_Binary       }
-    '#date'         { TKeyword H_Date         }
-    '#datetime'     { TKeyword H_DateTime     }
-    '#datetimezone' { TKeyword H_DateTimezone }
-    '#duration'     { TKeyword H_Duration     }
-    '#infinity'     { TKeyword H_Infinity     }
-    '#nan'          { TKeyword H_Nan          }
-    '#sections'     { TKeyword H_Sections     }
-    '#shared'       { TKeyword H_Shared       }
-    '#table'        { TKeyword H_Table        }
-    '#time'         { TKeyword H_Time         }
+    'and'           { KeywordT AndK            }
+    'as'            { KeywordT AsK             }
+    'each'          { KeywordT EachK           }
+    'else'          { KeywordT ElseK           }
+    'error'         { KeywordT ErrorK          }
+    'false'         { KeywordT FalseK          }
+    'if'            { KeywordT IfK             }
+    'in'            { KeywordT InK             }
+    'is'            { KeywordT IsK             }
+    'let'           { KeywordT LetK            }
+    'meta'          { KeywordT MetaK           }
+    'not'           { KeywordT NotK            }
+    'otherwise'     { KeywordT OtherwiseK      }
+    'or'            { KeywordT OrK             }
+    'section'       { KeywordT SectionK        }
+    'shared'        { KeywordT SharedK         }
+    'then'          { KeywordT ThenK           }
+    'true'          { KeywordT TrueK           }
+    'try'           { KeywordT TryK            }
+    'type'          { KeywordT TypeK           }
+    '#binary'       { KeywordT H_BinaryK       }
+    '#date'         { KeywordT H_DateK         }
+    '#datetime'     { KeywordT H_DateTimeK     }
+    '#datetimezone' { KeywordT H_DateTimezoneK }
+    '#duration'     { KeywordT H_DurationK     }
+    '#infinity'     { KeywordT H_InfinityK     }
+    '#nan'          { KeywordT H_NanK          }
+    '#sections'     { KeywordT H_SectionsK     }
+    '#shared'       { KeywordT H_SharedK       }
+    '#table'        { KeywordT H_TableK        }
+    '#time'         { KeywordT H_TimeK         }
 
-    ','             { TOperator Comma        }
-    ';'             { TOperator SemiColon    }
-    '='             { TOperator Equal        }
-    '<'             { TOperator LT'          }
-    '<='            { TOperator LEQ          }
-    '>'             { TOperator GT'          }
-    '>='            { TOperator GEQ          }
-    '<>'            { TOperator NEQ          }
-    '+'             { TOperator Plus         }
-    '-'             { TOperator Minus        }
-    '*'             { TOperator Mult         }
-    '/'             { TOperator Div          }
-    '&'             { TOperator Ampersand    }
-    '('             { TOperator LeftParen    }
-    ')'             { TOperator RightParen   }
-    '['             { TOperator LeftBracket  }
-    ']'             { TOperator RightBracket }
-    '{'             { TOperator LeftCurly    }
-    '}'             { TOperator RightCurly   }
-    '@'             { TOperator At           }
-    '?'             { TOperator QMark        }
-    '=>'            { TOperator Arrow        }
-    '..'            { TOperator TwoDots      }
-    '...'           { TOperator ThreeDots    }
+    ','             { OperatorT CommaO        }
+    ';'             { OperatorT SemiColonO    }
+    '='             { OperatorT EqualO        }
+    '<'             { OperatorT LT_O          }
+    '<='            { OperatorT LEQ_O         }
+    '>'             { OperatorT GT_O          }
+    '>='            { OperatorT GEQ_O         }
+    '<>'            { OperatorT NEQ_O         }
+    '+'             { OperatorT PlusO         }
+    '-'             { OperatorT MinusO        }
+    '*'             { OperatorT MultO         }
+    '/'             { OperatorT DivO          }
+    '&'             { OperatorT AmpersandO    }
+    '('             { OperatorT LeftParenO    }
+    ')'             { OperatorT RightParenO   }
+    '['             { OperatorT LeftBracketO  }
+    ']'             { OperatorT RightBracketO }
+    '{'             { OperatorT LeftCurlyO    }
+    '}'             { OperatorT RightCurlyO   }
+    '@'             { OperatorT AtO           }
+    '?'             { OperatorT QMarkO        }
+    '=>'            { OperatorT ArrowO        }
+    '..'            { OperatorT TwoDotsO      }
+    '...'           { OperatorT ThreeDotsO    }
 
-    'optional'     { TComment }
-    'nullable'     { TComment }
+    'optional'     { CommentT }
+    'nullable'     { CommentT }
 
-    'any'          { TComment }
-    'anynonnull'   { TComment }
-    'binary'       { TComment }
-    'date'         { TComment }
-    'datetimezone' { TComment }
-    'duration'     { TComment }
-    'function'     { TComment }
-    'list'         { TComment }
-    'logical'      { TComment }
-    'none'         { TComment }
-    'null'         { TComment }
-    'number'       { TComment }
-    'record'       { TComment }
-    'table'        { TComment }
-    'text'         { TComment }
-    'xxx'   { TComment }
-    '!'     { TComment }
+    'any'          { CommentT }
+    'anynonnull'   { CommentT }
+    'binary'       { CommentT }
+    'date'         { CommentT }
+    'datetimezone' { CommentT }
+    'duration'     { CommentT }
+    'function'     { CommentT }
+    'list'         { CommentT }
+    'logical'      { CommentT }
+    'none'         { CommentT }
+    'null'         { CommentT }
+    'number'       { CommentT }
+    'record'       { CommentT }
+    'table'        { CommentT }
+    'text'         { CommentT }
+    'xxx'   { CommentT }
+    '!'     { CommentT }
 
 %%
 
@@ -212,7 +212,7 @@ section_document
 
 section :: { Section Annotation }
 section
-    : literal_attributes 'section' section_name ';' section_members { Section' (Just $1) (Just $3) $5 (Just Annotation) }
+    : literal_attributes 'section' section_name ';' section_members { Section (Just $1) (Just $3) $5 (Just Annotation) }
 
 section_name :: { Identifier }
 section_name
@@ -238,30 +238,30 @@ expression_document
 
 expression :: { Expression Annotation }
 expression
-    : logical_or_expression     { Logical $1       }
-    | each_expression           { Each' $1         }
-    | function_expression       { Function $1      }
-    | let_expression            { Let' $1          }
-    | if_expression             { If' $1           }
-    | error_raising_expression  { ErrorRaising $1  }
-    | error_handling_expression { ErrorHandling $1 }
+    : logical_or_expression     { LogicalE $1       }
+    | each_expression           { EachE $1          }
+    | function_expression       { FunctionE $1      }
+     | let_expression            { LetE $1           }
+    | if_expression             { IfE $1            }
+    | error_raising_expression  { ErrorRaisingE $1  }
+    | error_handling_expression { ErrorHandlingE $1 }
 
 -- 12.2.3.2 - Logical expressions
 logical_or_expression :: { LogicalOrExpression Annotation }
 logical_or_expression
-    : logical_and_expression                            { And'' $1 }
-    | logical_and_expression 'or' logical_or_expression { Or'   $1 $3 }
+    : logical_and_expression                            { And_OE $1 }
+    | logical_and_expression 'or' logical_or_expression { Or_OE   $1 $3 }
 
 logical_and_expression :: { LogicalAndExpression Annotation }
 logical_and_expression
-    : is_expression                              { Is'''  $1 }
-    | logical_and_expression 'and' is_expression { And''' $1 $3 }
+    : is_expression                              { Is_LAE  $1 }
+    | logical_and_expression 'and' is_expression { And_LAE $1 $3 }
 
 -- 12.2.3.3 - Is expression
 is_expression :: { IsExpression Annotation }
 is_expression
-    : as_expression                              { As'' $1 }
-    | is_expression 'is' nullable_primitive_type { Is'  $1 $3 }
+    : as_expression                              { As_IE $1 }
+    | is_expression 'is' nullable_primitive_type { Is_IE  $1 $3 }
 
 -- TODO: fix
 nullable_primitive_type :: { NullablePrimitiveType }
@@ -271,39 +271,39 @@ nullable_primitive_type
 -- 12.2.3.4 -- As expression
 as_expression :: { AsExpression Annotation }
 as_expression
-    : equality_expression { Equality $1 }
-    | as_expression 'as' nullable_primitive_type { As' $1 $3 }
+    : equality_expression { EqualityAE $1 }
+    | as_expression 'as' nullable_primitive_type { As_AE $1 $3 }
 
 
 -- 12.2.3.5 -- Equality expression
 equality_expression :: { EqualityExpression Annotation }
 equality_expression
-    : relational_expression                          { Relational $1 }
-    | relational_expression '='  equality_expression { EqR  $1 $3    }
-    | relational_expression '<>' equality_expression { NeqR $1 $3    }
+    : relational_expression                          { RelationalEE $1 }
+    | relational_expression '='  equality_expression { Eq_EE  $1 $3    }
+    | relational_expression '<>' equality_expression { Neq_EE $1 $3    }
 
 -- 12.2.3.6 -- Relational expression
 relational_expression :: { RelationalExpression Annotation }
 relational_expression
-    : additive_expression                            { Additive $1 }
-    | additive_expression '<'  relational_expression { LtR  $1 $3  }
-    | additive_expression '>'  relational_expression { GtR  $1 $3  }
-    | additive_expression '<=' relational_expression { LeqR $1 $3  }
-    | additive_expression '>=' relational_expression { GeqR $1 $3  }
+    : additive_expression                            { AdditiveRE $1 }
+    | additive_expression '<'  relational_expression { Lt_RE  $1 $3  }
+    | additive_expression '>'  relational_expression { Gt_RE $1 $3   }
+    | additive_expression '<=' relational_expression { Leq_RE $1 $3  }
+    | additive_expression '>=' relational_expression { Geq_RE $1 $3  }
 
 -- 12.2.3.7 - Arithmetic expressions
 additive_expression :: { AdditiveExpression Annotation }
 additive_expression
-    : multiplicative_expression                         { Multiplicative $1 }
-    | multiplicative_expression '+' additive_expression { Plus' $1 $3 }
-    | multiplicative_expression '-' additive_expression { Minus' $1 $3 }
-    | multiplicative_expression '&' additive_expression { And' $1 $3 }
+    : multiplicative_expression                         { MultiplicativeAE $1 }
+    | multiplicative_expression '+' additive_expression { PlusAE $1 $3 }
+    | multiplicative_expression '-' additive_expression { MinusAE $1 $3 }
+    | multiplicative_expression '&' additive_expression { And_AE $1 $3 }
 
 multiplicative_expression :: { MultiplicativeExpression Annotation }
 multiplicative_expression
-    : metadata_expression { Metadata $1 }
-    | metadata_expression '*' multiplicative_expression { Mult' $1 $3 }
-    | metadata_expression '/' multiplicative_expression { Div'  $1 $3 }
+    : metadata_expression { MetadataME $1 }
+    | metadata_expression '*' multiplicative_expression { MultME $1 $3 }
+    | metadata_expression '/' multiplicative_expression { DivME  $1 $3 }
 
 -- 12.2.3.8 - Metadata expression
 metadata_expression :: { MetadataExpression Annotation }
@@ -322,16 +322,16 @@ unary_expression
 -- 12.2.3.10 - Primary expression
 primary_expression :: { PrimaryExpression Annotation }
 primary_expression
-    : literal_expression         { Literal $1        }
-    | list_expression            { List $1           }
-    | record_expression          { Record $1         }
-    | identifier_expression      { Identifier' $1    }
-    | section_access_expression  { SectionAccess $1  }
-    | parenthesized_expression   { Parenthesized $1  }
-    | field_access_expression    { FieldAccess $1    }
-    | item_access_expression     { ItemAccess $1     }
-    | invoke_expression          { Invoke $1         }
-    | not_implemented_expression { NotImplemented $1 }
+    : literal_expression         { LiteralPE $1        }
+    | list_expression            { ListPE $1           }
+    | record_expression          { RecordPE $1         }
+    | identifier_expression      { IdentifierPE $1     }
+    | section_access_expression  { SectionAccessPE $1  }
+    | parenthesized_expression   { ParenthesizedPE $1  }
+    | field_access_expression    { FieldAccessPE $1    }
+    | item_access_expression     { ItemAccessPE $1     }
+    | invoke_expression          { InvokePE $1         }
+    | not_implemented_expression { NotImplementedPE $1 }
 
 
 
@@ -585,17 +585,17 @@ false_expression
 -- 12.2.3.25 -- Type expression
 type_expression :: { TypeExpression Annotation }
 type_expression
-    : primary_expression  { Primary      $1 }
-    | 'type' primary_type { PrimaryType' $2 }
+    : primary_expression  { Primary_TE      $1 }
+    | 'type' primary_type { PrimaryType_TE  $2 }
 
 type :: { Type Annotation }
 type
-    : parenthesized_expression { Parenthesized' $1 }
-    | primary_type             { Type $1 (Just Annotation) }
+    : parenthesized_expression { ParenthesizedT $1 }
+    | primary_type             { TypeT $1 (Just Annotation) }
 
 primary_type :: { PrimaryType Annotation }
 primary_type
-    : primitive_type  { Primitive $1 }
+    : primitive_type  { PrimitiveType $1 }
     | record_type     { $1 }
     | list_type       { $1 }
     | function_type   { $1 }
@@ -691,14 +691,14 @@ literal_item_list
 
 any_literal :: { AnyLiteral Annotation }
 any_literal
-    : record_literal  { Record' $1  }
-    | list_literal    { List' $1    }
-    | logical_literal { Literal' $1 }
+    : record_literal  { Record_AL $1  }
+    | list_literal    { List_AL $1    }
+    | logical_literal { Literal_AL $1 }
 
 logical_literal :: { Literal }
 logical_literal
-    : 'true'  { Logical' True }
-    | 'false' { Logical' False }
+    : 'true'  { LogicalL True }
+    | 'false' { LogicalL False }
 
 {
 lexwrap = (alexMonadScan >>=)
@@ -707,11 +707,11 @@ parseError :: [Token] -> a
 parseError ts = error $ "Parse errror " <> show ts
 
 getIdent :: Token -> Identifier
-getIdent (TIdentifier ident) = ident
+getIdent (IdentifierT ident) = ident
 getIdent _ = error "Not a TIdentifier"
 
 getLiteral :: Token -> Literal
-getLiteral (TLiteral literal) = literal
+getLiteral (LiteralT literal) = literal
 getLiteral _ = error "Not a TIdentifier"
 
 }

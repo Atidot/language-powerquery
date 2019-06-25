@@ -19,7 +19,7 @@ data Document annotation
 
 -- 12.2.2 Section Documents
 data Section annotation
-    = Section'
+    = Section
     { _section_attributes :: !(Maybe (RecordLiteral annotation))
     , _section_name       :: !(Maybe Identifier)
     , _section_members    :: !([SectionMember annotation])
@@ -42,33 +42,33 @@ data SectionMember annotation
 
 -- 12.2.3.1 Expressions
 data Expression annotation
-    = Logical       (LogicalOrExpression annotation)
-    | Each'         (EachExpression annotation)
-    | Function      (FunctionExpression annotation)
-    | Let'          (LetExpression annotation)
-    | If'           (IfExpression annotation)
-    | ErrorRaising  (ErrorRaisingExpression annotation)
-    | ErrorHandling (ErrorHandlingExpression annotation)
+    = LogicalE       (LogicalOrExpression annotation)
+    | EachE          (EachExpression annotation)
+    | FunctionE      (FunctionExpression annotation)
+    | LetE           (LetExpression annotation)
+    | IfE            (IfExpression annotation)
+    | ErrorRaisingE  (ErrorRaisingExpression annotation)
+    | ErrorHandlingE (ErrorHandlingExpression annotation)
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 
 -- 12.2.3.2 Logical Expressions
 data LogicalOrExpression annotation
-    = And'' (LogicalAndExpression annotation)
-    | Or'   (LogicalAndExpression annotation)
+    = And_OE (LogicalAndExpression annotation)
+    | Or_OE   (LogicalAndExpression annotation)
             (LogicalOrExpression  annotation)
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 data LogicalAndExpression annotation
-    = Is'''  (IsExpression annotation)
-    | And''' (LogicalAndExpression annotation)
+    = Is_LAE  (IsExpression annotation)
+    | And_LAE (LogicalAndExpression annotation)
              (IsExpression  annotation)
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 -- 12.2.3.3 Is expression
 data IsExpression annotation
-    = As'' (AsExpression annotation)
-    | Is'  (IsExpression annotation) NullablePrimitiveType
+    = As_IE (AsExpression annotation)
+    | Is_IE (IsExpression annotation) NullablePrimitiveType
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 data NullablePrimitiveType
@@ -80,49 +80,49 @@ data NullablePrimitiveType
 
 -- 12.2.3.4 As expression
 data AsExpression annotation
-    = Equality (EqualityExpression annotation)
-    | As' (AsExpression annotation) NullablePrimitiveType
+    = EqualityAE (EqualityExpression annotation)
+    | As_AE      (AsExpression annotation) NullablePrimitiveType
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 -- 12.2.3.5 Equality expression
 data EqualityExpression annotation
-    = Relational (RelationalExpression annotation)
-    | EqR (RelationalExpression annotation)
-          (EqualityExpression annotation)
-    | NeqR (RelationalExpression annotation)
-           (EqualityExpression annotation)
+    = RelationalEE (RelationalExpression annotation)
+    | Eq_EE (RelationalExpression annotation)
+            (EqualityExpression annotation)
+    | Neq_EE (RelationalExpression annotation)
+             (EqualityExpression annotation)
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 -- 12.2.3.6 Relational jxpression
 data RelationalExpression annotation
-    = Additive (AdditiveExpression annotation)
-    | LtR      (AdditiveExpression annotation)
-               (RelationalExpression annotation)
-    | GtR      (AdditiveExpression annotation)
-               (RelationalExpression annotation)
-    | LeqR     (AdditiveExpression annotation)
-               (RelationalExpression annotation)
-    | GeqR     (AdditiveExpression annotation)
-               (RelationalExpression annotation)
+    = AdditiveRE (AdditiveExpression annotation)
+    | Lt_RE       (AdditiveExpression annotation)
+                  (RelationalExpression annotation)
+    | Gt_RE       (AdditiveExpression annotation)
+                  (RelationalExpression annotation)
+    | Leq_RE      (AdditiveExpression annotation)
+                  (RelationalExpression annotation)
+    | Geq_RE      (AdditiveExpression annotation)
+                  (RelationalExpression annotation)
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 -- 12.2.3.7 Arithmetic kxpression
 data AdditiveExpression annotation
-    = Multiplicative (MultiplicativeExpression annotation)
-    | Plus'  (MultiplicativeExpression annotation)
-             (AdditiveExpression annotation)
-    | Minus' (MultiplicativeExpression annotation)
-             (AdditiveExpression annotation)
-    | And'   (MultiplicativeExpression annotation)
-             (AdditiveExpression annotation)
+    = MultiplicativeAE (MultiplicativeExpression annotation)
+    | PlusAE  (MultiplicativeExpression annotation)
+              (AdditiveExpression annotation)
+    | MinusAE (MultiplicativeExpression annotation)
+              (AdditiveExpression annotation)
+    | And_AE   (MultiplicativeExpression annotation)
+              (AdditiveExpression annotation)
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 data MultiplicativeExpression annotation
-    = Metadata (MetadataExpression annotation)
-    | Mult' (MetadataExpression annotation)
-            (MultiplicativeExpression annotation)
-    | Div'  (MetadataExpression annotation)
-            (MultiplicativeExpression annotation)
+    = MetadataME (MetadataExpression annotation)
+    | MultME (MetadataExpression annotation)
+             (MultiplicativeExpression annotation)
+    | DivME  (MetadataExpression annotation)
+             (MultiplicativeExpression annotation)
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 
@@ -145,16 +145,16 @@ data UnaryExpression annotation
 
 -- 12.2.3.10 Primary expression
 data PrimaryExpression annotation
-    = Literal       (LiteralExpression annotation)
-    | List           (ListExpression annotation)
-    | Record         (RecordExpression annotation)
-    | Identifier'    (IdentifierExpression annotation)
-    | SectionAccess  (SectionAccessExpression annotation)
-    | Parenthesized  (ParenthesizedExpression annotation)
-    | FieldAccess    (FieldAccessExpression annotation)
-    | ItemAccess     (ItemAccessExpression annotation)
-    | Invoke         (InvokeExpression annotation)
-    | NotImplemented (NotImplementedExpression annotation)
+    = LiteralPE        (LiteralExpression annotation)
+    | ListPE          (ListExpression annotation)
+    | RecordPE        (RecordExpression annotation)
+    | IdentifierPE     (IdentifierExpression annotation)
+    | SectionAccessPE  (SectionAccessExpression annotation)
+    | ParenthesizedPE  (ParenthesizedExpression annotation)
+    | FieldAccessPE    (FieldAccessExpression annotation)
+    | ItemAccessPE     (ItemAccessExpression annotation)
+    | InvokePE         (InvokeExpression annotation)
+    | NotImplementedPE (NotImplementedExpression annotation)
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 -- 12.2.3.11 Literal expression
@@ -338,14 +338,14 @@ data IfExpression annotation
 
 -- 12.3.2.25 Type Expression
 data TypeExpression annotation
-    = Primary (PrimaryExpression annotation)
-    | PrimaryType' (PrimaryType annotation)
+    = Primary_TE (PrimaryExpression annotation)
+    | PrimaryType_TE (PrimaryType annotation)
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 
 data Type annotation
-    = Parenthesized' (ParenthesizedExpression annotation)
-    | Type
+    = ParenthesizedT (ParenthesizedExpression annotation)
+    | TypeT
       { _type_primary    :: !(PrimaryType annotation)
       , _type_annotation :: !(Maybe annotation)
       }
@@ -353,7 +353,7 @@ data Type annotation
 
 
 data PrimaryType annotation
-    = Primitive PrimitiveType
+    = PrimitiveType PrimitiveType
     | RecordType
       { _recordType_fieldSpecifications :: !([FieldSpecification annotation])
       , _recordType_annotation          :: !(Maybe annotation)
@@ -453,8 +453,8 @@ data ListLiteral annotation
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 data AnyLiteral annotation
-    = Record'  (RecordLiteral annotation)
-    | List'    (ListLiteral annotation)
-    | Literal' (Literal)
+    = Record_AL  (RecordLiteral annotation)
+    | List_AL    (ListLiteral annotation)
+    | Literal_AL (Literal)
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
