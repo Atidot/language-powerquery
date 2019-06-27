@@ -9,6 +9,8 @@ import "language-powerquery-ast" Language.PowerQuery.AST
 class PrettyPrint a where
     pprint :: a -> Text
 
+instance PrettyPrint Annotation
+
 instance (PrettyPrint a) => PrettyPrint (Maybe a) where
     pprint Nothing  = ""
     pprint (Just x) = pprint x

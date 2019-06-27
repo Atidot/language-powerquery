@@ -1,4 +1,5 @@
 {-# LANGUAGE PackageImports #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE InstanceSigs #-}
@@ -6,11 +7,11 @@ module Codec.Pbix.Types.Lens where
 
 import           "base"                    Data.Maybe (fromJust)
 import           "lens"                    Control.Lens
+import qualified "text"                    Data.Text as T
 import qualified "bytestring"              Data.ByteString.Lazy.Char8 as BL8
 import           "zip-archive"             Codec.Archive.Zip
 import           "language-powerquery-ast" Language.PowerQuery.AST
-import                                     Language.PowerQuery.Lexer  (lexer)
-import                                     Language.PowerQuery.Parser (parseDocument)
+import           "language-powerquery"     Language.PowerQuery
 import                                     Codec.Pbix.Types.Types
 
 
@@ -42,16 +43,25 @@ instance HasDataMashup Pbix where
     dataMashup :: Lens' Pbix DataMashup
     dataMashup = lens getter setter
         where
+            unknownHeader :: BL8.ByteString
+            unknownHeader = "\x00\x00\x00\x00\x00\x00\x00\x00"
+
             getter (Pbix archive)
                 = DataMashup
                 . toArchive
-                . BL8.drop 8 -- unknown header...
+                . BL8.drop (BL8.length unknownHeader)
                 . fromJust
                 . (fromEntry <$>)
                 . findEntryByPath "DataMashup"
                 $ archive
 
-            setter pbix@(Pbix _) _ = pbix -- id
+            setter (Pbix archive) (DataMashup innerArchive)
+                = Pbix
+                . flip addEntryToArchive archive
+                . toEntry "DataMashup" 0
+                . (unknownHeader <>)
+                . fromArchive
+                $ innerArchive
 
 
 instance HasFormulas DataMashup where
@@ -65,7 +75,11 @@ instance HasFormulas DataMashup where
                 . findEntryByPath ("Formulas/" <> name)
                 $ archive
 
-            setter dm@(DataMashup _) _ = dm -- id
+            setter (DataMashup archive) (Formula bs)
+                = DataMashup
+                . flip addEntryToArchive archive
+                . toEntry ("Formulas/" <> name) 0
+                $ bs
 
 
 instance HasDocument Formula Annotation where
@@ -82,4 +96,9 @@ instance HasDocument Formula Annotation where
                 . BL8.unpack
                 $ bs
 
-            setter formula@(Formula _) _ = formula -- id
+            setter (Formula bs) doc
+                = Formula
+                . BL8.pack
+                . T.unpack
+                . pprint
+                $ doc

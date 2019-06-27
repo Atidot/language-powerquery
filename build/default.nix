@@ -5,11 +5,11 @@
 with nixpkgs;
 let
   haskellPackages_ = pkgs.haskell.packages.${compiler}.extend (self: super: rec {
-    wasm                    = self.callPackage ./cabal2nix/wasm.nix {};
-    language-powerquery-ast = self.callPackage ./cabal2nix/language-powerquery-ast.nix {};
-    language-powerquery     = self.callPackage ./cabal2nix/language-powerquery.nix {};
-    pbix                    = self.callPackage ./cabal2nix/pbix.nix {};
-    m2wasm                  = self.callPackage ./cabal2nix/m2wasm.nix {};
+    wasm                    = self.callPackage ./wasm.nix {};
+    language-powerquery-ast = self.callPackage ./language-powerquery-ast.nix {};
+    language-powerquery     = self.callPackage ./language-powerquery.nix {};
+    pbix                    = self.callPackage ./pbix.nix {};
+    m2wasm                  = self.callPackage ./m2wasm.nix {};
   });
 
   haskellEnv = haskellPackages_.ghcWithPackages (ps: with ps; [
