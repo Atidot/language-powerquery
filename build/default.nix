@@ -6,11 +6,13 @@ let
   haskellPackages_ = pkgs.haskell.packages.${compiler}.extend (self: super: rec {
     language-powerquery-ast = self.callPackage ./language-powerquery-ast.nix {};
     language-powerquery     = self.callPackage ./language-powerquery.nix {};
+    pbix                    = self.callPackage ./pbix.nix {};
   });
 
   haskellEnv = haskellPackages_.ghcWithPackages (ps: with ps; [
     language-powerquery-ast
     language-powerquery
+    pbix
   ]);
 
 in

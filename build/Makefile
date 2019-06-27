@@ -10,3 +10,4 @@ docker:
 cabal2nix:
 	cabal2nix ../language-powerquery-ast > language-powerquery-ast.nix
 	cabal2nix ../language-powerquery     > language-powerquery.nix
+	cabal2nix ../pbix                    > pbix.nix

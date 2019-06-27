@@ -9,6 +9,6 @@ module Language.PowerQuery.AST ( module Language.PowerQuery.AST.Annotation
 import Language.PowerQuery.AST.Annotation
 import Language.PowerQuery.AST.Token
 import Language.PowerQuery.AST.AST
-import Language.PowerQuery.AST.Lens ()
+import Language.PowerQuery.AST.Lens
 import Language.PowerQuery.AST.JSON ()
 import Language.PowerQuery.AST.Arbitrary ()
