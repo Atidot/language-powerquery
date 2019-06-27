@@ -1,8 +1,12 @@
 {-# LANGUAGE PackageImports #-}
 module Atidot.Compiler.M2Wasm.Test where
 
-import "wasm"                    Language.Wasm
-import "language-powerquery-ast" Language.PowerQuery.AST
+import qualified "wasm"                    Language.Wasm.Structure as Wasm
+import           "language-powerquery-ast" Language.PowerQuery.AST
+
+logical :: LogicalOrExpression Annotation -> Wasm.Expression
+logical (And_OE andExpr) = undefined
+logical _ = undefined
 
 main :: IO ()
 main = undefined

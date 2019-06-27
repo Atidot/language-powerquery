@@ -55,8 +55,8 @@ data Expression annotation
 -- 12.2.3.2 Logical Expressions
 data LogicalOrExpression annotation
     = And_OE (LogicalAndExpression annotation)
-    | Or_OE   (LogicalAndExpression annotation)
-            (LogicalOrExpression  annotation)
+    | Or_OE  (LogicalAndExpression annotation)
+             (LogicalOrExpression  annotation)
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 data LogicalAndExpression annotation
