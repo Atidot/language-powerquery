@@ -1,7 +1,7 @@
 { nixpkgs ? import <nixpkgs> {} }:
 with nixpkgs;
 let
-  language-powerquery-env = import ./default.nix {};
+  notebook-env = import ./notebook.nix {};
 in
 nixpkgs.dockerTools.buildImage {
   name = "atidot/language-powerquery";
@@ -15,7 +15,7 @@ nixpkgs.dockerTools.buildImage {
                nixpkgs.nss
                nixpkgs.cacert
                nixpkgs.coreutils
-               language-powerquery-env
+               notebook-env
              ];
 
   runAsRoot = ''
@@ -25,6 +25,11 @@ nixpkgs.dockerTools.buildImage {
 
   config = {
     Entrypoint = [
+        "jupyter-lab" "--allow-root"
       ];
+    WorkingDir = "/examples";
+    Volumes = {
+      "/examples" = {};
+    };
   };
 }

@@ -10,7 +10,7 @@ shell:
 	nix-shell ${NIX_FLAGS}
 
 notebook:
-	nix-shell ${NIX_FLAGS} notebook.nix
+	nix-shell ${NIX_FLAGS} -A env notebook.nix --command "jupyter lab --notebook-dir=../examples/"
 
 docker:
 	nix-build ${NIX_FLAGS} docker.nix -o docker.tar.gz

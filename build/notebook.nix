@@ -33,4 +33,4 @@ let
     kernels = [ ihaskellWithPackages ];
   };
 in
-jupyterEnvironment.env
+jupyterEnvironment
