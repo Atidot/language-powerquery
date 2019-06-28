@@ -9,5 +9,8 @@ build-js:
 shell:
 	nix-shell ${NIX_FLAGS}
 
+notebook:
+	nix-shell ${NIX_FLAGS} notebook.nix
+
 docker:
 	nix-build ${NIX_FLAGS} docker.nix -o docker.tar.gz
