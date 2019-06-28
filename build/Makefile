@@ -1,11 +1,16 @@
+NIX_FLAGS=--cores 0 -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/19.03.tar.gz
+
 build:
-	nix-build
+	nix-build ${NIX_FLAGS}
+
+build-js:
+	nix-build ${NIX_FLAGS} --arg compiler \"ghcjs\"
 
 shell:
-	nix-shell
+	nix-shell ${NIX_FLAGS}
 
 docker:
-	nix-build docker.nix -o docker.tar.gz
+	nix-build ${NIX_FLAGS} docker.nix -o docker.tar.gz
 
 cabal2nix:
 	cabal2nix ../language-powerquery-ast > ./language-powerquery-ast.nix
