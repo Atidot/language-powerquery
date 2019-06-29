@@ -595,7 +595,7 @@ type
 
 primary_type :: { PrimaryType Annotation }
 primary_type
-    : primitive_type  { PrimitiveType $1 }
+    : primitive_type  { PrimitiveType' $1 }
     | record_type     { $1 }
     | list_type       { $1 }
     | function_type   { $1 }
@@ -670,7 +670,7 @@ literal_attributes
 
 record_literal :: { RecordLiteral Annotation }
 record_literal
-    : '[' literal_field_list ']' { RecordLiteral $2 }
+    : '[' literal_field_list ']' { RecordLiteral' $2 }
 
 literal_field_list :: { [LiteralField Annotation] }
 literal_field_list
@@ -683,7 +683,7 @@ literal_field
 
 list_literal :: { ListLiteral Annotation }
 list_literal
-    : '{' literal_item_list '}' { ListLiteral $2 }
+    : '{' literal_item_list '}' { ListLiteral' $2 }
 
 literal_item_list :: { [AnyLiteral Annotation ] }
 literal_item_list

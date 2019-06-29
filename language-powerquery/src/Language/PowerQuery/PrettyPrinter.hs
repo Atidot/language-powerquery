@@ -162,7 +162,7 @@ instance (PrettyPrint a) => PrettyPrint (Type a) where
         = "type " <> pprint primary
 
 instance (PrettyPrint a) => PrettyPrint (PrimaryType a) where
-    pprint (PrimitiveType ptype)                   = pprint ptype
+    pprint (PrimitiveType' ptype)                  = pprint ptype
     pprint (RecordType fieldSpecs _)               = undefined
     pprint (ListType itemType _)                   = undefined
     pprint (FunctionType mParamSpecs returnType _) = undefined
@@ -217,7 +217,7 @@ instance (PrettyPrint a) => PrettyPrint (ErrorHandlingExpression a) where
 
 -- 12.2.4 Literal Attributes
 instance (PrettyPrint a) => PrettyPrint (RecordLiteral a) where
-    pprint (RecordLiteral fields)
+    pprint (RecordLiteral' fields)
         = "[" <> fields' <> "]"
         where
             fields' = intercalate "," . map pprint $ fields
@@ -227,7 +227,7 @@ instance (PrettyPrint a) => PrettyPrint (LiteralField a) where
         = pprint name <> " = " <> pprint literal
 
 instance (PrettyPrint a) => PrettyPrint (ListLiteral a) where
-    pprint (ListLiteral items)
+    pprint (ListLiteral' items)
         = "{" <> items' <> "}"
         where
             items' = intercalate "," . map pprint $ items

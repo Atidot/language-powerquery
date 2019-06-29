@@ -353,7 +353,7 @@ data Type annotation
 
 
 data PrimaryType annotation
-    = PrimitiveType PrimitiveType
+    = PrimitiveType' PrimitiveType
     | RecordType
       { _recordType_fieldSpecifications :: !([FieldSpecification annotation])
       , _recordType_annotation          :: !(Maybe annotation)
@@ -438,7 +438,7 @@ data ErrorHandlingExpression annotation
 
 -- 12.2.4 Literal Attributes
 data RecordLiteral annotation
-    = RecordLiteral [LiteralField annotation]
+    = RecordLiteral' [LiteralField annotation]
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 data LiteralField annotation
@@ -449,7 +449,7 @@ data LiteralField annotation
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 data ListLiteral annotation
-    = ListLiteral [AnyLiteral annotation]
+    = ListLiteral' [AnyLiteral annotation]
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 data AnyLiteral annotation
