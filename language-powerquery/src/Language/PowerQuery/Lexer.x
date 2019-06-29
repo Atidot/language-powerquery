@@ -27,7 +27,8 @@ $line_separator_character       = [] -- TODO:
 $paragraph_separator_character  = [] -- TODO:
 
 $whitespace =
-    [ $unicode_class_Zs
+    [ $white
+      $unicode_class_Zs
       $horizontal_tab_character
       $vertical_tab_character
       $form_feed_character
@@ -65,14 +66,29 @@ $sign      = [\+\-]
 $single_text_character = ~[\"\#"] -- TODO:
 
 -- 12.1.6 - Identifiers
-$dot_character          = [\.]
-$underscore_character   = [\_]
-$letter_character       = [] -- TODO:
-$combining_character    = [] -- TODO:
-$decimal_digit_characer = [] -- TODO:
-$connecting_character   = [] -- TODO:
-$formatting_character   = [] -- TODO:
+$dot_character           = [\.]
+$underscore_character    = [\_]
 
+$large     = [A-Z \xc0-\xd6 \xd8-\xde]
+$small     = [a-z \xdf-\xf6 \xf8-\xff \_]
+$letter_character        = [$large $small] -- TODO:
+
+$combining_character     = [] -- TODO:
+$decimal_digit_character = 0-9 -- TODO:
+$connecting_character    = [] -- TODO:
+$formatting_character    = [] -- TODO:
+$identifier_part_character =
+    [ $letter_character
+      $decimal_digit_character
+      $underscore_character
+      $connecting_character
+      $combining_character
+      $formatting_character
+    ]
+$identifier_start_character =
+    [ $letter_character
+      $underscore_character
+    ]
 
 --====================
 -- 12.1.2 - Comment
@@ -124,59 +140,50 @@ $formatting_character   = [] -- TODO:
     )
 
 @decimal_number_literal =
+    @decimal_digits @exponent_part{0,1}
+
+@decimal_number_literal__float =
     ( @decimal_digits \. @decimal_digits @exponent_part{0,1}
     | \. @decimal_digits @exponent_part{0,1}
-    | @decimal_digits @exponent_part{0,1}
     )
 
 @hex_digits =
-    hex_digit+
+    $hex_digit+
 
 @hexadecimal_number_literal =
     ( 0x @hex_digits
     | 0X @hex_digits
     )
 
+-- 12.1.6 - Identifiers
+@identifier_part_characters =
+    $identifier_part_character+
+
+@keyword_or_identifier =
+    ( $letter_character
+    | $underscore_character
+    | $identifier_start_character @identifier_part_characters
+    )
+
+@available_identifier =
+    @keyword_or_identifier -- TODO:
+
+
+
+@generalized_identifier_segment =
+    ( @keyword_or_identifier \. @keyword_or_identifier
+    | @keyword_or_identifier
+    )
+
+@generalized_identifier_part =
+    ( @generalized_identifier_segment
+    | $decimal_digit_character @generalized_identifier_segment
+    )
+
+@generalized_identifier = -- TODO:
+    @generalized_identifier_part
 
 --=====================
-$whitechar = [ \t\n\r\f\v]
-$special   = [\(\)\,\;\[\]\`\{\}]
-
-$ascdigit  = 0-9
-$unidigit  = [] -- TODO
-$digit     = [$ascdigit $unidigit]
-
-$ascsymbol = [\!\#\$\%\&\*\+\.\/\<\=\>\?\@\\\^\|\-\~]
-$unisymbol = [] -- TODO
-$symbol    = [$ascsymbol $unisymbol] # [$special \_\:\"\']
-$large     = [A-Z \xc0-\xd6 \xd8-\xde]
-$small     = [a-z \xdf-\xf6 \xf8-\xff \_]
-$alpha     = [$small $large]
-$graphic   = [$small $large $symbol $digit $special \:\"\']
-$octit	   = 0-7
-@bobo      = A+
-$hexit     = [0-9 A-F a-f]
-$idchar    = [$alpha $digit \']
-$symchar   = [$symbol \:]
-$nl        = [\n\r]
-
-@varid  = $small $idchar*
-@conid  = $large $idchar*
-@varsym = $symbol $symchar*
-@consym = \: $symchar*
-@decimal     = $digit+
-@octal       = $octit+
-@hexadecimal = $hexit+
-@exponent    = [eE] [\-\+] @decimal
-$cntrl   = [$large \@\[\\\]\^\_]
-@ascii   = \^ $cntrl | NUL | SOH | STX | ETX | EOT | ENQ | ACK
-	 | BEL | BS | HT | LF | VT | FF | CR | SO | SI | DLE
-	 | DC1 | DC2 | DC3 | DC4 | NAK | SYN | ETB | CAN | EM
-	 | SUB | ESC | FS | GS | RS | US | SP | DEL
-$charesc = [abfnrtv\\\"\'\&]
-@escape  = \\ ($charesc | @ascii | @decimal | o @octal | x @hexadecimal)
-@gap     = \\ $whitechar+ \\
-@string  = $graphic # [\"\\] | " " | @escape | @gap
 
 powerquery :-
   -- 12.1.1 White space
@@ -186,27 +193,19 @@ powerquery :-
   <0> @single_line_comment { mkL CommentT }
 
   --==========
-  -- 12.1.5 - number-literal
-  <0> @decimal
-    | 0[xX] @hexadecimal     { mkInteger }
+  -- 12.1.5 - number-literal -- TODO
+  <0> @decimal_number_literal
+    | @hexadecimal_number_literal    { mkInteger }
 
-  <0> @decimal \. @decimal @exponent?
-    | \. @decimal @exponent?
-    | @decimal @exponent     { mkFloat }
+  <0> @decimal_number_literal__float { mkFloat }
 
   --==========
   -- 12.1.5 - text-literal
-  <0> \" @string* \"         { mkString }
+  <0> \" @text_literal_characters* \"         { mkString }
 
   --==========
   -- 12.1.5 - null-literal
   <0> "null"                 { mkL $ LiteralT NullL }
-
-  --==========
-  -- 12.1.6 - quoted-identifer
-  <0> @conid+                { mkIdentifier }
-  <0> \# \" @string* \"       { mkQuotedIdentifier }
-
 
   --==========
   -- 12.1.7 - Keywords and predefined identifiers
@@ -269,6 +268,14 @@ powerquery :-
   "=>"  { mkL $ OperatorT ArrowO }
   ".."  { mkL $ OperatorT TwoDotsO }
   "..." { mkL $ OperatorT ThreeDotsO }
+
+  --==========
+  -- 12.1.6 -- regular-identifier -- TODO
+  <0> @available_identifier { mkIdentifier }
+
+  -- 12.1.6 - quoted-identifer
+  <0> \# \" @text_literal_characters* \" { mkQuotedIdentifier }
+
 
 {
 data Lexeme = L AlexPosn Token String
