@@ -22,11 +22,16 @@ data Token
 -- 12.1.5 Literals
 data Literal
     = LogicalL Bool
-    | IntegerL Integer
-    | FloatL   Float
+    | NumberL  NumberLiteral
     | StringL  Text
     | NullL
     deriving (Show, Read, Eq, Data, Typeable, Generic)
+
+data NumberLiteral
+    = IntegerL Integer
+    | FloatL   Float
+    deriving (Show, Read, Eq, Data, Typeable, Generic)
+
 
 -- 12.1.6 Identifiers
 data Identifier

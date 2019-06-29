@@ -116,9 +116,6 @@ import               Language.PowerQuery.AST.AST
 %error { parseError }
 
 %token
-    'identifier'    { IdentifierT _          }
-    'literal'       { LiteralT _             }
-
     'and'           { KeywordT AndK            }
     'as'            { KeywordT AsK             }
     'each'          { KeywordT EachK           }
@@ -177,6 +174,10 @@ import               Language.PowerQuery.AST.AST
     '...'           { OperatorT ThreeDotsO    }
 
     'optional'     { CommentT }
+    'null'         { LiteralT NullL }
+    'number'       { LiteralT (NumberL _) }
+    'text'         { LiteralT (StringL _) }
+
     'nullable'     { CommentT }
 
     'any'          { CommentT }
@@ -189,13 +190,14 @@ import               Language.PowerQuery.AST.AST
     'list'         { CommentT }
     'logical'      { CommentT }
     'none'         { CommentT }
-    'null'         { CommentT }
-    'number'       { CommentT }
     'record'       { CommentT }
     'table'        { CommentT }
-    'text'         { CommentT }
     'xxx'   { CommentT }
     '!'     { CommentT }
+
+    'identifier'    { IdentifierT _          }
+    'literal'       { LiteralT _             }
+
 
 %%
 
@@ -212,7 +214,22 @@ section_document
 
 section :: { Section Annotation }
 section
-    : literal_attributes 'section' section_name ';' section_members { Section (Just $1) (Just $3) $5 (Just Annotation) }
+    : literal_attributes__opt 'section' section_name__opt ';' section_members__opt { Section $1 $3 $5 (Just Annotation) }
+
+literal_attributes__opt :: { Maybe (RecordLiteral annotation) }
+literal_attributes__opt
+    : literal_attributes { Just $1 }
+    | {- empty -}        { Nothing}
+
+section_name__opt :: { Maybe Identifier }
+section_name__opt
+    : section_name   { Just $1 }
+    | {- empty -}    { Nothing }
+
+section_members__opt :: { Maybe [SectionMember annotation] }
+section_members__opt
+    : section_members    { Just $1 }
+    | {- empty -}        { Nothing }
 
 section_name :: { Identifier }
 section_name
@@ -694,6 +711,9 @@ any_literal
     : record_literal  { Record_AL $1  }
     | list_literal    { List_AL $1    }
     | logical_literal { Literal_AL $1 }
+    | 'text'          { Literal_AL $ getLiteral $1 }
+    | 'number'        { Literal_AL $ getLiteral $1 }
+    | 'null'          { Literal_AL $ getLiteral $1 }
 
 logical_literal :: { Literal }
 logical_literal
@@ -704,7 +724,7 @@ logical_literal
 lexwrap = (alexMonadScan >>=)
 
 parseError :: [Token] -> a
-parseError ts = error $ "Parse errror " <> show ts
+parseError ts = error $ "Parse error " <> show ts
 
 getIdent :: Token -> Identifier
 getIdent (IdentifierT ident) = ident

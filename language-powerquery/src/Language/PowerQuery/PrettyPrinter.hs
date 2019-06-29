@@ -27,12 +27,12 @@ instance PrettyPrint Token where
 
 -- 12.1.5 Literals
 instance PrettyPrint Literal where
-    pprint (LogicalL True)  = "true"
-    pprint (LogicalL False) = "false"
-    pprint (IntegerL i)     = pack . show $ i
-    pprint (FloatL   f)     = pack . show $ f
-    pprint (StringL  t)     = t
-    pprint NullL            = "null"
+    pprint (LogicalL True)        = "true"
+    pprint (LogicalL False)       = "false"
+    pprint (NumberL (IntegerL i)) = pack . show $ i
+    pprint (NumberL (FloatL   f)) = pack . show $ f
+    pprint (StringL  t)           = t
+    pprint NullL                  = "null"
 
 -- 12.1.6 Identifiers
 instance PrettyPrint Identifier where
@@ -107,10 +107,13 @@ instance (PrettyPrint a) => PrettyPrint (Document a) where
 
 -- 12.2.2 Section Documents
 instance (PrettyPrint a) => PrettyPrint (Section a) where
-    pprint (Section mAttrs mName members _)
+    pprint (Section mAttrs mName mMembers _)
         = pprint mAttrs <> " section " <> pprint mName <> " ; " <> members'
         where
-            members' = mconcat . map pprint $ members
+            members' = mconcat . map pprint . tmp $ mMembers
+
+            tmp Nothing = []
+            tmp (Just ms) = ms
 
 instance (PrettyPrint a) => PrettyPrint (SectionMember a) where
     pprint (SectionMember mAttrs shared name expression _)

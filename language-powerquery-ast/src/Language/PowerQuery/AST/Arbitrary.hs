@@ -24,6 +24,10 @@ instance Arbitrary Literal where
     arbitrary = genericArbitrary
     shrink    = genericShrink
 
+instance Arbitrary NumberLiteral where
+    arbitrary = genericArbitrary
+    shrink    = genericShrink
+
 instance Arbitrary Identifier where
     arbitrary = genericArbitrary
     shrink    = genericShrink

@@ -22,7 +22,7 @@ data Section annotation
     = Section
     { _section_attributes :: !(Maybe (RecordLiteral annotation))
     , _section_name       :: !(Maybe Identifier)
-    , _section_members    :: !([SectionMember annotation])
+    , _section_members    :: !(Maybe [SectionMember annotation])
     , _section_annotation :: !(Maybe annotation)
     }
     deriving (Show, Read, Eq, Data, Typeable, Generic)

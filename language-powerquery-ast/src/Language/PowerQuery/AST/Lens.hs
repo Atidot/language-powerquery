@@ -17,6 +17,8 @@ makeClassy       ''Token
 makeClassyPrisms ''Token
 makeClassy       ''Literal
 makeClassyPrisms ''Literal
+makeClassy       ''NumberLiteral
+makeClassyPrisms ''NumberLiteral
 makeClassy       ''Identifier
 makeClassyPrisms ''Identifier
 makeClassy       ''Keyword

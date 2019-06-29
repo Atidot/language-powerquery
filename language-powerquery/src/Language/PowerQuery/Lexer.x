@@ -15,6 +15,130 @@ import               Language.PowerQuery.AST.Token
 %wrapper "monad"
 
 
+-- 12.1.1 - White space
+$unicode_class_Zs               = [] -- TODO:
+$horizontal_tab_character       = [\t]
+$vertical_tab_character         = [\v]
+$form_feed_character            = [\f]
+$carriage_return_character      = [\r]
+$line_feed_character            = [\n]
+$next_line_character            = [\x85]
+$line_separator_character       = [] -- TODO:
+$paragraph_separator_character  = [] -- TODO:
+
+$whitespace =
+    [ $unicode_class_Zs
+      $horizontal_tab_character
+      $vertical_tab_character
+      $form_feed_character
+      $carriage_return_character
+      $line_feed_character
+      $next_line_character
+      $line_separator_character
+      $paragraph_separator_character
+    ]
+
+$new_line_character =
+    [ $carriage_return_character
+      $line_feed_character
+      $next_line_character
+      $line_separator_character
+      $paragraph_separator_character
+    ]
+
+-- 12.1.2 - Comment
+$single_line_comment_character = ~[ $new_line_character ]
+
+-- 12.1.4 - Character escape sequences
+$control_character =
+    [ $carriage_return_character
+      $line_feed_character
+      $horizontal_tab_character
+    ]
+
+$escape_escape = '#'
+
+-- 12.1.5 - Literals
+$decimal_digit = 0-9
+$hex_digit = [0-9 A-F a-f]
+$sign      = [\+\-]
+$single_text_character = ~[\"\#"] -- TODO:
+
+-- 12.1.6 - Identifiers
+$dot_character          = [\.]
+$underscore_character   = [\_]
+$letter_character       = [] -- TODO:
+$combining_character    = [] -- TODO:
+$decimal_digit_characer = [] -- TODO:
+$connecting_character   = [] -- TODO:
+$formatting_character   = [] -- TODO:
+
+
+--====================
+-- 12.1.2 - Comment
+@single_line_comment =
+    \/\/ $single_line_comment_character*
+
+-- 12.1.4 - Character escape sequences
+@long_unicode_escape_sequence =
+    $hex_digit $hex_digit $hex_digit $hex_digit $hex_digit $hex_digit $hex_digit $hex_digit
+
+@short_unicode_escape_sequence =
+    $hex_digit $hex_digit $hex_digit $hex_digit
+
+@control_character_escape_sequence =
+    $control_character
+
+@single_escape_sequence =
+    ( @long_unicode_escape_sequence
+    | @short_unicode_escape_sequence
+    | @control_character_escape_sequence
+    | $escape_escape
+    )
+
+-- 12.1.5 - Literals
+@double_quoted_escape_sequence =
+    \" \"
+
+@null_literal =
+    "null"
+
+@text_literal_character =
+    ( $single_text_character
+    | \# \( @single_escape_sequence  \)  -- TODO:
+    | @double_quoted_escape_sequence
+    )
+
+@text_literal_characters =
+    @text_literal_character+
+
+@text_literal =
+    \" @text_literal_characters* \"
+
+@decimal_digits =
+    $decimal_digit+
+
+@exponent_part =
+    ( e [$sign] @decimal_digits
+    | E [$sign] @decimal_digits
+    )
+
+@decimal_number_literal =
+    ( @decimal_digits \. @decimal_digits @exponent_part{0,1}
+    | \. @decimal_digits @exponent_part{0,1}
+    | @decimal_digits @exponent_part{0,1}
+    )
+
+@hex_digits =
+    hex_digit+
+
+@hexadecimal_number_literal =
+    ( 0x @hex_digits
+    | 0X @hex_digits
+    )
+
+
+--=====================
 $whitechar = [ \t\n\r\f\v]
 $special   = [\(\)\,\;\[\]\`\{\}]
 
@@ -30,6 +154,7 @@ $small     = [a-z \xdf-\xf6 \xf8-\xff \_]
 $alpha     = [$small $large]
 $graphic   = [$small $large $symbol $digit $special \:\"\']
 $octit	   = 0-7
+@bobo      = A+
 $hexit     = [0-9 A-F a-f]
 $idchar    = [$alpha $digit \']
 $symchar   = [$symbol \:]
@@ -53,12 +178,12 @@ $charesc = [abfnrtv\\\"\'\&]
 @gap     = \\ $whitechar+ \\
 @string  = $graphic # [\"\\] | " " | @escape | @gap
 
-
 powerquery :-
-  <0> $white+  { skip }
+  -- 12.1.1 White space
+  <0> $whitespace+  { skip }
 
   -- 12.1.2 - Comment
-  <0> "//".*   { mkL CommentT }
+  <0> @single_line_comment { mkL CommentT }
 
   --==========
   -- 12.1.5 - number-literal
@@ -75,10 +200,11 @@ powerquery :-
 
   --==========
   -- 12.1.5 - null-literal
-  <0> null                   { mkL $ LiteralT NullL }
+  <0> "null"                 { mkL $ LiteralT NullL }
 
   --==========
   -- 12.1.6 - quoted-identifer
+  <0> @conid+                { mkIdentifier }
   <0> \# \" @string* \"       { mkQuotedIdentifier }
 
 
@@ -155,7 +281,7 @@ mkL c (p,_,_,str) len = return (L p c (take len str))
 
 
 mkInteger :: AlexInput -> Int -> Alex Lexeme
-mkInteger (p,_,_,str) len = return (L p (LiteralT $ IntegerL value) match)
+mkInteger (p,_,_,str) len = return (L p (LiteralT $ NumberL $ IntegerL value) match)
     where
         match :: String
         match = take len str
@@ -164,7 +290,7 @@ mkInteger (p,_,_,str) len = return (L p (LiteralT $ IntegerL value) match)
         value = read match
 
 mkFloat :: AlexInput -> Int -> Alex Lexeme
-mkFloat (p,_,_,str) len = return (L p (LiteralT $ FloatL value) match)
+mkFloat (p,_,_,str) len = return (L p (LiteralT $ NumberL $ FloatL value) match)
     where
         match :: String
         match = take len str
@@ -174,6 +300,12 @@ mkFloat (p,_,_,str) len = return (L p (LiteralT $ FloatL value) match)
 
 mkString :: AlexInput -> Int -> Alex Lexeme
 mkString (p,_,_,str) len = return (L p (LiteralT $ StringL (pack match)) match)
+    where
+        match :: String
+        match = take len str
+
+mkIdentifier :: AlexInput -> Int -> Alex Lexeme
+mkIdentifier (p,_,_,str) len = return (L p (IdentifierT $ RegularI (pack match)) match)
     where
         match :: String
         match = take len str

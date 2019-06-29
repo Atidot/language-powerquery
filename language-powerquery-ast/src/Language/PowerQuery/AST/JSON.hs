@@ -14,6 +14,7 @@ import         Language.PowerQuery.AST.AST
 
 instance ToJSON Token
 instance ToJSON Literal
+instance ToJSON NumberLiteral
 instance ToJSON Identifier
 instance ToJSON Keyword
 instance ToJSON Operator
@@ -69,6 +70,7 @@ instance (ToJSON a) => ToJSON (AnyLiteral a)
 
 instance FromJSON Token
 instance FromJSON Literal
+instance FromJSON NumberLiteral
 instance FromJSON Identifier
 instance FromJSON Keyword
 instance FromJSON Operator
