@@ -202,7 +202,7 @@ data NotImplementedExpression annotation
 data InvokeExpression annotation
     = InvokeExpression
     { _invokeExpression_primary      :: !(PrimaryExpression annotation)
-    , _invokeExpression_argumentList :: !([Expression annotation])
+    , _invokeExpression_argumentList :: !(Maybe [Expression annotation])
     , _invokeExpression_annotation   :: !(Maybe annotation)
     }
     deriving (Show, Read, Eq, Data, Typeable, Generic)
@@ -210,7 +210,7 @@ data InvokeExpression annotation
 -- 12.2.3.17 List expression
 data ListExpression annotation
     = ListExpression
-    { _listExpression_itemList   :: !([Item annotation])
+    { _listExpression_itemList   :: !(Maybe [Item annotation])
     , _listExpression_annotation :: !(Maybe annotation)
     }
     deriving (Show, Read, Eq, Data, Typeable, Generic)
@@ -438,7 +438,7 @@ data ErrorHandlingExpression annotation
 
 -- 12.2.4 Literal Attributes
 data RecordLiteral annotation
-    = RecordLiteral' [LiteralField annotation]
+    = RecordLiteral' (Maybe [LiteralField annotation])
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 data LiteralField annotation
@@ -449,7 +449,7 @@ data LiteralField annotation
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 data ListLiteral annotation
-    = ListLiteral' [AnyLiteral annotation]
+    = ListLiteral' (Maybe [AnyLiteral annotation])
     deriving (Show, Read, Eq, Data, Typeable, Generic)
 
 data AnyLiteral annotation

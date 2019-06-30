@@ -33,7 +33,7 @@ import               Language.PowerQuery.AST.AST
 %name parseRelationalExpression          relational_expression
 %name parseAdditiveExpression            additive_expression
 %name parseMultiplicativeExpression      multiplicative_expression
-%name parseMetadataExpression           metadata_expression
+%name parseMetadataExpression            metadata_expression
 %name parseUnaryExpression               unary_expression
 %name parsePrimaryExpression             primary_expression
 %name parseLiteralExpression             literal_expression
@@ -174,26 +174,30 @@ import               Language.PowerQuery.AST.AST
     '...'           { OperatorT ThreeDotsO    }
 
     'optional'     { CommentT }
-    'null'         { LiteralT NullL }
-    'number'       { LiteralT (NumberL _) }
-    'text'         { LiteralT (StringL _) }
+    'nullL'        { LiteralT NullL }
+    'numberL'       { LiteralT (NumberL _) }
+    'textL'         { LiteralT (StringL _) }
 
     'nullable'     { CommentT }
 
-    'any'          { CommentT }
-    'anynonnull'   { CommentT }
-    'binary'       { CommentT }
-    'date'         { CommentT }
-    'datetimezone' { CommentT }
-    'duration'     { CommentT }
-    'function'     { CommentT }
-    'list'         { CommentT }
-    'logical'      { CommentT }
-    'none'         { CommentT }
-    'record'       { CommentT }
-    'table'        { CommentT }
-    'xxx'   { CommentT }
-    '!'     { CommentT }
+    'any'          { IdentifierT (RegularI "any") }
+    'anynonnull'   { IdentifierT (RegularI "anynonnull") }
+    'binary'       { IdentifierT (RegularI "binary") }
+    'date'         { IdentifierT (RegularI "date") }
+    'datetimezone' { IdentifierT (RegularI "datetimezone") }
+    'duration'     { IdentifierT (RegularI "duration") }
+    'function'     { IdentifierT (RegularI "function") }
+    'list'         { IdentifierT (RegularI "list") }
+    'logical'      { IdentifierT (RegularI "logical") }
+    'none'         { IdentifierT (RegularI "none") }
+    'null'         { IdentifierT (RegularI "null") }
+    'number'       { IdentifierT (RegularI "number") }
+    'record'       { IdentifierT (RegularI "record") }
+    'table'        { IdentifierT (RegularI "table") }
+    'text'         { IdentifierT (RegularI "text") }
+
+    'xxx'          { CommentT }
+    '!'            { CommentT }
 
     'identifier'    { IdentifierT _          }
     'literal'       { LiteralT _             }
@@ -242,7 +246,12 @@ section_members
 
 section_member :: { SectionMember Annotation }
 section_member
-    : literal_attributes 'shared' section_member_name '=' expression ';' { SectionMember (Just $1) True $3 $5 (Just Annotation) }
+    : literal_attributes__opt shared__opt section_member_name '=' expression ';' { SectionMember $1 $2 $3 $5 (Just Annotation) }
+
+shared__opt :: { Bool }
+shared__opt
+    : 'shared'    { True }
+    | {- empty -} { False }
 
 section_member_name :: { Identifier }
 section_member_name
@@ -258,7 +267,7 @@ expression
     : logical_or_expression     { LogicalE $1       }
     | each_expression           { EachE $1          }
     | function_expression       { FunctionE $1      }
-     | let_expression            { LetE $1           }
+    | let_expression            { LetE $1           }
     | if_expression             { IfE $1            }
     | error_raising_expression  { ErrorRaisingE $1  }
     | error_handling_expression { ErrorHandlingE $1 }
@@ -280,10 +289,14 @@ is_expression
     : as_expression                              { As_IE $1 }
     | is_expression 'is' nullable_primitive_type { Is_IE  $1 $3 }
 
--- TODO: fix
 nullable_primitive_type :: { NullablePrimitiveType }
 nullable_primitive_type
-    : 'nullable' primitive_type { NullablePrimitiveType $2 True }
+    : nullable__opt primitive_type { NullablePrimitiveType $2 $1 }
+
+nullable__opt :: { Bool }
+nullable__opt
+    : 'nullable'  { True }
+    | {- empty -} { False }
 
 -- 12.2.3.4 -- As expression
 as_expression :: { AsExpression Annotation }
@@ -355,7 +368,11 @@ primary_expression
 -- 12.2.3.11 - Literal expression
 literal_expression :: { LiteralExpression Annotation }
 literal_expression
-    : 'literal' { LiteralExpression (getLiteral $1) (Just Annotation) }
+    : 'nullL'  { LiteralExpression (getLiteral $1)  (Just Annotation) }
+    | 'textL'   { LiteralExpression (getLiteral $1)  (Just Annotation) }
+    | 'numberL' { LiteralExpression (getLiteral $1)  (Just Annotation) }
+    | 'true'   { LiteralExpression (LogicalL True)  (Just Annotation) }
+    | 'false'  { LiteralExpression (LogicalL False) (Just Annotation) }
 
 -- 12.2.3.12 - Identifier expression
 identifier_expression :: { IdentifierExpression Annotation }
@@ -393,7 +410,12 @@ not_implemented_expression
 -- 12.2.3.16 - Invoke expression
 invoke_expression :: { InvokeExpression Annotation }
 invoke_expression
-    : primary_expression '(' argument_list ')' { InvokeExpression $1 $3 (Just Annotation) }
+    : primary_expression '(' argument_list__opt ')' { InvokeExpression $1 $3 (Just Annotation) }
+
+argument_list__opt :: { Maybe [Expression Annotation] }
+argument_list__opt
+    : argument_list { Just $1 }
+    | {- empty -}   { Nothing }
 
 argument_list :: { [Expression Annotation] }
 argument_list
@@ -403,7 +425,12 @@ argument_list
 -- 12.2.3.17 - List expression
 list_expression :: { ListExpression Annotation }
 list_expression
-    : '{' item_list '}' { ListExpression $2 (Just Annotation) }
+    : '{' item_list__opt '}' { ListExpression $2 (Just Annotation) }
+
+item_list__opt :: { Maybe [Item Annotation] }
+item_list__opt
+    : item_list   { Just $1 }
+    | {- empty -} { Nothing }
 
 item_list :: { [Item Annotation] }
 item_list
@@ -508,7 +535,18 @@ implicit_target_projection
 -- 12.2.3.21 - Function expression
 function_expression :: { FunctionExpression Annotation }
 function_expression
-    : '(' parameter_list ')' return_type '=>' function_body { FunctionExpression $6 (Just $2) (Just $4) (Just Annotation) }
+    : '(' parameter_list__opt ')' return_type__opt '=>' function_body { FunctionExpression $6 $2 $4 (Just Annotation) }
+
+parameter_list__opt :: { Maybe [Parameter Annotation] }
+parameter_list__opt
+    : parameter_list  { Just $1 }
+    | {- empty -}     { Nothing }
+
+
+return_type__opt :: { Maybe (Type Annotation) }
+return_type__opt
+    : return_type { Just $1 }
+    | {- empty -} { Nothing }
 
 function_body :: { Expression Annotation }
 function_body
@@ -527,7 +565,12 @@ fixed_parameter_list
 
 parameter :: { Parameter Annotation }
 parameter
-    : parameter_name parameter_type { Parameter $1 (Just $2) False (Just Annotation) }
+    : parameter_name parameter_type__opt { Parameter $1 $2 False (Just Annotation) }
+
+parameter_type__opt :: { Maybe (Type Annotation) }
+parameter_type__opt
+    : parameter_type { Just $1 }
+    | {- empty -}    { Nothing }
 
 parameter_name :: { Identifier }
 parameter_name
@@ -666,18 +709,23 @@ error_raising_expression
 -- 12.2.3.27 - Error handling expression
 error_handling_expression :: { ErrorHandlingExpression Annotation }
 error_handling_expression
-    : 'try' protected_expression otherwise_clause { ErrorHandlingExpression $2 (Just $3) (Just Annotation) }
+    : 'try' protected_expression otherwise_clause__opt { ErrorHandlingExpression $2 $3 (Just Annotation) }
 
 protected_expression :: { Expression Annotation }
 protected_expression
     : expression { $1 }
+
+otherwise_clause__opt :: { Maybe (Expression Annotation) }
+otherwise_clause__opt
+    : otherwise_clause { Just $1 }
+    | {- empty -}      { Nothing }
 
 otherwise_clause :: { Expression Annotation }
 otherwise_clause
     : 'otherwise' default_expression { $2 }
 
 default_expression :: { Expression Annotation }
-default_expession
+default_expression
     : expression { $1 }
 
 -- 12.2.4 - Literal Attributes
@@ -687,7 +735,12 @@ literal_attributes
 
 record_literal :: { RecordLiteral Annotation }
 record_literal
-    : '[' literal_field_list ']' { RecordLiteral' $2 }
+    : '[' literal_field_list__opt ']' { RecordLiteral' $2 }
+
+literal_field_list__opt :: { Maybe [LiteralField Annotation] }
+literal_field_list__opt
+    : literal_field_list { Just $1 }
+    | {- empty -}        { Nothing }
 
 literal_field_list :: { [LiteralField Annotation] }
 literal_field_list
@@ -700,7 +753,12 @@ literal_field
 
 list_literal :: { ListLiteral Annotation }
 list_literal
-    : '{' literal_item_list '}' { ListLiteral' $2 }
+    : '{' literal_item_list__opt '}' { ListLiteral' $2 }
+
+literal_item_list__opt :: { Maybe [AnyLiteral Annotation] }
+literal_item_list__opt
+    : literal_item_list { Just $1 }
+    | {- empty -}       { Nothing }
 
 literal_item_list :: { [AnyLiteral Annotation ] }
 literal_item_list
@@ -711,9 +769,9 @@ any_literal
     : record_literal  { Record_AL $1  }
     | list_literal    { List_AL $1    }
     | logical_literal { Literal_AL $1 }
-    | 'text'          { Literal_AL $ getLiteral $1 }
-    | 'number'        { Literal_AL $ getLiteral $1 }
-    | 'null'          { Literal_AL $ getLiteral $1 }
+    | 'textL'          { Literal_AL $ getLiteral $1 }
+    | 'numberL'        { Literal_AL $ getLiteral $1 }
+    | 'nullL'         { Literal_AL $ getLiteral $1 }
 
 logical_literal :: { Literal }
 logical_literal

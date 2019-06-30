@@ -168,7 +168,8 @@ $identifier_start_character =
 @available_identifier =
     @keyword_or_identifier -- TODO:
 
-
+@regular_identifier =
+    ( @available_identifier \. )* @available_identifier
 
 @generalized_identifier_segment =
     ( @keyword_or_identifier \. @keyword_or_identifier
@@ -271,7 +272,7 @@ powerquery :-
 
   --==========
   -- 12.1.6 -- regular-identifier -- TODO
-  <0> @available_identifier { mkIdentifier }
+  <0> @regular_identifier { mkIdentifier }
 
   -- 12.1.6 - quoted-identifer
   <0> \# \" @text_literal_characters* \" { mkQuotedIdentifier }

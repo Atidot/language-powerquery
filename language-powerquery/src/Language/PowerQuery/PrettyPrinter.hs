@@ -220,20 +220,26 @@ instance (PrettyPrint a) => PrettyPrint (ErrorHandlingExpression a) where
 
 -- 12.2.4 Literal Attributes
 instance (PrettyPrint a) => PrettyPrint (RecordLiteral a) where
-    pprint (RecordLiteral' fields)
+    pprint (RecordLiteral' mFields)
         = "[" <> fields' <> "]"
         where
-            fields' = intercalate "," . map pprint $ fields
+            fields Nothing = []
+            fields (Just xs) = xs
+
+            fields' = intercalate "," . map pprint . fields $ mFields
 
 instance (PrettyPrint a) => PrettyPrint (LiteralField a) where
     pprint (LiteralField name literal)
         = pprint name <> " = " <> pprint literal
 
 instance (PrettyPrint a) => PrettyPrint (ListLiteral a) where
-    pprint (ListLiteral' items)
+    pprint (ListLiteral' mItems)
         = "{" <> items' <> "}"
         where
-            items' = intercalate "," . map pprint $ items
+            items Nothing = []
+            items (Just xs) = xs
+
+            items' = intercalate "," . map pprint . items $ mItems
 
 instance (PrettyPrint a) => PrettyPrint (AnyLiteral a) where
     pprint (Record_AL r)  = pprint r
