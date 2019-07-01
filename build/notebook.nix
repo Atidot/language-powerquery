@@ -22,6 +22,8 @@ let
     haskellPackages=haskellPackages;
     name = "powerquery-env-ihaskell";
     packages = p: with p; [
+      uniplate
+      lens-aeson
       language-powerquery-ast
       language-powerquery
       pbix
