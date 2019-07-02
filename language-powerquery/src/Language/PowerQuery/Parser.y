@@ -683,23 +683,93 @@ primitive_type
 
 record_type :: { PrimaryType Annotation }
 record_type
-    : 'xxx'    { RecordType [] Nothing }
+    : '[' '...' ']'                               { RecordType [] (Just Annotation) }
+    | '[' field_specification_list ']'            { RecordType $2 (Just Annotation) }
+    | '[' field_specification_list ',' '...' ']'  { RecordType $2 (Just Annotation) }
+
+field_specification_list :: { [FieldSpecification Annotation] }
+field_specification_list
+    : field_specification                              { [$1] }
+    | field_specification ',' field_specification_list { $1:$3 }
+
+field_specification :: { FieldSpecification Annotation }
+field_specification
+    : optional__opt 'identifier' field_type_specification__opt { FieldSpecification (getIdent $2) $3 $1 (Just Annotation) }
+
+optional__opt :: { Bool }
+optional__opt
+    : 'optional'   { True }
+    | {- empty -}  { False }
+
+field_type_specification__opt :: { Maybe (Type Annotation) }
+field_type_specification__opt
+    : field_type_specification { Just $1 }
+    | {- empty -}              { Nothing }
+
+field_type_specification :: { Type Annotation }
+field_type_specification
+    : '=' field_type { $2 }
+
+field_type :: { Type Annotation }
+field_type
+    : type { $1 }
 
 list_type :: { PrimaryType Annotation }
 list_type
-    : 'xxx'  { ListType undefined Nothing }
+    : '{' item_type '}'  { ListType $2 (Just Annotation) }
+
+item_type :: { Type Annotation }
+item_type
+    : type { $1 }
 
 function_type :: { PrimaryType Annotation }
 function_type
-    : 'xxx'  { FunctionType undefined TypeAny Nothing }
+    : 'function' '(' parameter_specification_list__opt ')' return_type { FunctionType $3 $5 (Just Annotation) }
+
+parameter_specification_list__opt :: { Maybe [ParameterSpecification Annotation] }
+parameter_specification_list__opt
+    : parameter_specification_list { Just $1 }
+    | {- empty -}                  { Nothing }
+
+parameter_specification_list :: { [ParameterSpecification Annotation] }
+parameter_specification_list
+    : required_parameter_specification_list                                           { $1 }
+    | required_parameter_specification_list ',' optional_parameter_specification_list { $1 <> $3 }
+    | optional_parameter_specification_list                                           { $1 }
+
+required_parameter_specification_list :: { [ParameterSpecification Annotation] }
+required_parameter_specification_list
+    : required_parameter_specification                                          { [$1] }
+    | required_parameter_specification ',' required_parameter_specification_list { $1:$3 }
+
+required_parameter_specification :: { ParameterSpecification Annotation }
+required_parameter_specification
+    : parameter_specification { $1 }
+
+optional_parameter_specification_list :: { [ParameterSpecification Annotation] }
+optional_parameter_specification_list
+    : optional_parameter_specification                                           { [$1] }
+    | optional_parameter_specification ',' optional_parameter_specification_list { $1:$3 }
+
+optional_parameter_specification :: { ParameterSpecification Annotation }
+optional_parameter_specification
+    : 'optional' parameter_specification { $2 { _parameterSpecification_optional = True} }
+
+parameter_specification :: { ParameterSpecification Annotation }
+parameter_specification
+    : parameter_name parameter_type { ParameterSpecification $1 (Just $2) False (Just Annotation) }
 
 table_type :: { PrimaryType Annotation }
 table_type
-    : 'xxx'  { TableType [] Nothing }
+    : 'table' row_type { TableType $2 (Just Annotation) }
+
+row_type :: { [FieldSpecification Annotation] }
+row_type
+    : '[' field_specification_list ']' { $2 }
 
 nullable_type :: { PrimaryType Annotation }
 nullable_type
-    : 'xxx'  { NullableType undefined Nothing }
+    : 'nullable' type { NullableType $2 (Just Annotation) }
 
 -- 12.2.3.26 - Error raising expression
 error_raising_expression :: { ErrorRaisingExpression Annotation }

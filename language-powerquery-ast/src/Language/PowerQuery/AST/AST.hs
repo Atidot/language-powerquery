@@ -364,7 +364,7 @@ data PrimaryType annotation
       }
     | FunctionType
       { _functionType_parametersSpecifications :: !(Maybe [ParameterSpecification annotation])
-      , _functionType_returnType               :: !PrimitiveType
+      , _functionType_returnType               :: !(Type annotation)
       , _functionType_annotation               :: !(Maybe annotation)
       }
     | TableType
