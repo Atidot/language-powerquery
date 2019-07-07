@@ -21,7 +21,6 @@ library
   exposed-modules:     Codec.Pbix.Types.Types
                      , Codec.Pbix.Types.Lens
                      , Codec.Pbix.Types
-                     , Codec.Pbix.Main
   -- other-modules:
   -- other-extensions:
   build-depends:       base
@@ -50,7 +49,11 @@ executable pbix
   -- other-modules:
   -- other-extensions:
   build-depends:       base
+                     , lens
+                     , bytestring
+                     , aeson
                      , optparse-applicative
                      , pbix
+                     , language-powerquery-ast
   hs-source-dirs:      app
   default-language:    Haskell2010

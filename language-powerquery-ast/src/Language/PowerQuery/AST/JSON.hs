@@ -11,6 +11,9 @@ module Language.PowerQuery.AST.JSON where
 import "aeson" Data.Aeson
 import         Language.PowerQuery.AST.Token
 import         Language.PowerQuery.AST.AST
+import         Language.PowerQuery.AST.Annotation
+
+instance ToJSON Annotation
 
 instance ToJSON Token
 instance ToJSON Literal
@@ -67,6 +70,8 @@ instance (ToJSON a) => ToJSON (LiteralField a)
 instance (ToJSON a) => ToJSON (ListLiteral a)
 instance (ToJSON a) => ToJSON (AnyLiteral a)
 
+
+instance FromJSON Annotation
 
 instance FromJSON Token
 instance FromJSON Literal

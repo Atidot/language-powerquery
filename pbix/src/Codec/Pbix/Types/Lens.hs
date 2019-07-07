@@ -23,6 +23,7 @@ class HasDataMashup a where
 
 class HasFormulas a where
     formula :: String -> Lens' a Formula
+    formulas :: Traversal' a [Formula]
 
 
 instance HasPbix BL8.ByteString where
@@ -81,6 +82,8 @@ instance HasFormulas DataMashup where
                 . toEntry ("Formulas/" <> name) 0
                 $ bs
 
+    formulas :: Traversal' DataMashup [Formula]
+    formulas = undefined
 
 instance HasDocument Formula Annotation where
     document :: Lens' Formula (Document Annotation)
