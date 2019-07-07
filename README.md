@@ -4,6 +4,7 @@ Tools for working with and analyzing PowerQuery (M Language) scripts
 - Haskell lexer/parser/printer    ([language-powerquery])
 - PowerBI `.pbix` file reader     ([pbix])
 - Example IHaskell (Jupyter) [notebooks]
+   - [Pbix Example]
 
 # Build
 - [Install Nixpkgs]
@@ -14,6 +15,9 @@ nix-build --cores 0 -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/19.03.ta
 /nix/store/3lzlivfyy7cqnxw0q594amsj94yswk43-powerquery-env
 12:52 barak@berkos:~/Development/atidot/language-powerquery/build (master) $
 ~~~
+- `make` (JavaScript / NodeJS)
+    - TODO:
+
 - `make` (Docker)
     - TODO:
 
@@ -36,9 +40,15 @@ nix-shell --cores 0 -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/19.03.ta
 [I 13:37:07.300 LabApp] Accepting one-time-token-authenticated connection from ::1
 ~~~
 
+## TODO
+- [ ] Hackage packages
+- [ ] Javascript version
+- [ ] [Reflex] Editor (CodeMirror, JSONEditor)
+
 [language-powerquery-ast]: https://github.com/Atidot/language-powerquery/tree/master/language-powerquery-ast
 [language-powerquery]: https://github.com/Atidot/language-powerquery/tree/master/language-powerquery
 [pbix]: https://github.com/Atidot/language-powerquery/tree/master/pbix
 [notebooks]: https://github.com/Atidot/language-powerquery/tree/master/examples
 [Install Nixpkgs]: https://nixos.org/nix/download.html
-
+[Reflex]: https://reflex-frp.org/
+[Pbix Example]: https://github.com/Atidot/language-powerquery/blob/master/examples/PowerBI_File_PBIX/Pbix_Example.ipynb

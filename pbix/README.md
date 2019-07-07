@@ -28,7 +28,6 @@ ularI "iris", _sectionMember_expression = LetE (LetExpression {_letExpression_va
 ~~~
 
 ### Print the AST as a JSON
-- ([iris dataset])
 ~~~ shell
 12:58 barak@berkos:~/Development/atidot/language-powerquery/build (master) $ ./result/bin/pbix print --path ../examples/PowerBI_File_PBIX/iris.pbix --formula Section1.m -x -j | head -c 1000
 {"tag":"SectionDocument","contents":{"_section_attributes":null,"_section_name":{"tag":"RegularI","contents":"Section1"},"_section_members":[{"_sectionMember_expression":{"tag":"LetE","contents":{"_letExpression_expression":{"tag":"L
@@ -40,6 +39,7 @@ able_expression":{"tag":"LogicalE","contents":{"tag":"And_OE","conte
 ~~~
 
 ### Print all String Literals (using [jq])
+- ([iris dataset])
 ~~~ shell
 12:25 barak@berkos:~/Development/atidot/language-powerquery/build (master) $ ./result/bin/pbix print --path ../examples/PowerBI_File_PBIX/iris.pbix --formula Section1.m -x -j | jq -c 'paths as $path | select(getpath($path) == "String
 L") | getpath($path[:-1]) | .contents'
@@ -59,6 +59,9 @@ L") | getpath($path[:-1]) | .contents'
 "#\"Promoted Headers\""
 "#\"Changed Type\""
 ~~~
+
+## TODO:
+- [ ] Implement `Traversal` for `HasFormula DataMashup`
 
 [jq]: https://stedolan.github.io/jq/
 [Build]: https://github.com/Atidot/language-powerquery#Build
