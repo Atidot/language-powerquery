@@ -14,6 +14,7 @@ import           "language-powerquery"     Language.PowerQuery
 data Lex
     = Lex
     { _lex_path :: !(Maybe FilePath)
+    , _lex_json :: !Bool
     }
 
 data Parse
@@ -40,6 +41,11 @@ lexParser = C1 <$> (Lex
      <> metavar "PATH"
      <> help "Lex PowerQuery Text"
       ))
+    <*> switch
+      ( long "json"
+     <> short 'j'
+     <> help "print Tokens as JSON"
+      )
     )
 
 parseParser :: Parser Command
@@ -73,12 +79,14 @@ readPathOrStdin (Just path) = B.readFile path
 
 
 lex :: Lex -> IO ()
-lex (Lex mPath) = do
+lex (Lex mPath shouldJSON) = do
     bs <- readPathOrStdin mPath
     let tokens = lexer
                . B.unpack
                $ bs
-    print tokens
+    if shouldJSON
+    then B.putStrLn . encode $ tokens
+    else print               $ tokens
     return ()
 
 
