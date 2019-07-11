@@ -2,8 +2,9 @@
 module Main where
 
 import           "base"                    Data.Semigroup ((<>))
+import           "base"                    System.IO (stdin)
 import           "lens"                    Control.Lens
-import qualified "bytestring"              Data.ByteString.Lazy.Char8 as B (readFile, putStrLn)
+import qualified "bytestring"              Data.ByteString.Lazy.Char8 as B (ByteString, readFile, hGetContents, putStrLn)
 import           "aeson"                   Data.Aeson (encode)
 import           "optparse-applicative"    Options.Applicative
 import           "pbix"                    Codec.Pbix.Types
@@ -12,12 +13,12 @@ import           "language-powerquery-ast" Language.PowerQuery.AST
 
 data ListFormulas
     = ListFormulas
-    { _listFormula_path :: !FilePath
+    { _listFormula_path :: !(Maybe FilePath)
     }
 
 data PrintFormula
     = PrintFormula
-    { _printFormula_path    :: !FilePath
+    { _printFormula_path    :: !(Maybe FilePath)
     , _printFormula_formula :: !String
     , _printFormula_parse   :: !Bool
     , _printFormaul_json    :: !Bool
@@ -29,22 +30,22 @@ data Command
 
 listFormulasParser :: Parser Command
 listFormulasParser = C1 <$> (ListFormulas
-    <$> strOption
+    <$> optional (strOption
       ( long "path"
      <> short 'p'
      <> metavar "PATH"
      <> help ".pbix file path"
       )
-    )
+    ))
 
 printFormulaParser :: Parser Command
 printFormulaParser = C2 <$> (PrintFormula
-    <$> strOption
+    <$> optional (strOption
       ( long "path"
      <> short 'p'
      <> metavar "PATH"
      <> help ".pbix file path"
-      )
+      ))
     <*> strOption
       ( long "formula"
      <> short 'f'
@@ -70,14 +71,18 @@ combined = subparser
         <> command "print" (info printFormulaParser (progDesc "Print a formula in a .pbix"))
          )
 
+readPathOrStdin :: Maybe FilePath -> IO B.ByteString
+readPathOrStdin Nothing     = B.hGetContents stdin
+readPathOrStdin (Just path) = B.readFile path
+
 listFormulas :: ListFormulas -> IO ()
-listFormulas (ListFormulas path) = do
-    bs <- B.readFile path
+listFormulas (ListFormulas mPath) = do
+    bs <- readPathOrStdin mPath
     print $ bs ^. pbix . dataMashup . formulas
 
 printFormula :: PrintFormula -> IO ()
-printFormula (PrintFormula path name shouldParse shouldJSON) = do
-    bs <- B.readFile path
+printFormula (PrintFormula mPath name shouldParse shouldJSON) = do
+    bs <- readPathOrStdin mPath
     let script = bs ^. pbix . dataMashup . formula name
     if shouldParse
     then if shouldJSON

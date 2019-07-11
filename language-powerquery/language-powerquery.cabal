@@ -53,6 +53,8 @@ executable language-powerquery
   -- other-modules:
   -- other-extensions:
   build-depends:       base
+                     , bytestring
+                     , aeson
                      , optparse-applicative
                      , language-powerquery-ast
                      , language-powerquery
