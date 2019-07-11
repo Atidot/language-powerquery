@@ -146,8 +146,8 @@ data UnaryExpression annotation
 -- 12.2.3.10 Primary expression
 data PrimaryExpression annotation
     = LiteralPE        (LiteralExpression annotation)
-    | ListPE          (ListExpression annotation)
-    | RecordPE        (RecordExpression annotation)
+    | ListPE           (ListExpression annotation)
+    | RecordPE         (RecordExpression annotation)
     | IdentifierPE     (IdentifierExpression annotation)
     | SectionAccessPE  (SectionAccessExpression annotation)
     | ParenthesizedPE  (ParenthesizedExpression annotation)
@@ -226,7 +226,7 @@ data Item annotation
 -- 12.2.3.18 Record expression
 data RecordExpression annotation
     = RecordExpression
-    { _recordExpression_fieldList  :: !([Field annotation])
+    { _recordExpression_fieldList  :: !(Maybe [Field annotation])
     , _recordExpression_annotation :: !(Maybe annotation)
     }
     deriving (Show, Read, Eq, Data, Typeable, Generic)

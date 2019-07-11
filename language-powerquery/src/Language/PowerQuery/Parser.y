@@ -429,8 +429,8 @@ list_expression
 
 item_list__opt :: { Maybe [Item Annotation] }
 item_list__opt
-    : item_list   { Just $1 }
-    | {- empty -} { Nothing }
+    : item_list     { Just $1 }
+    | {- empty -}   { Nothing }
 
 item_list :: { [Item Annotation] }
 item_list
@@ -445,7 +445,12 @@ item
 -- 12.2.3.18 - Record expression
 record_expression :: { RecordExpression Annotation }
 record_expression
-    : '[' field_list ']' { RecordExpression $2 (Just Annotation) }
+    : '[' field_list__opt ']' { RecordExpression $2 (Just Annotation) }
+
+field_list__opt :: { Maybe [Field Annotation] }
+field_list__opt
+    : field_list  { Just $1 }
+    | {- empty -} { Nothing }
 
 field_list :: { [Field Annotation] }
 field_list

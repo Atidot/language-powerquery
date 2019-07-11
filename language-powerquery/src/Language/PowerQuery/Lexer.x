@@ -191,7 +191,7 @@ powerquery :-
   <0> $whitespace+  { skip }
 
   -- 12.1.2 - Comment
-  <0> @single_line_comment { mkL CommentT }
+  <0> @single_line_comment ;
 
   --==========
   -- 12.1.5 - number-literal -- TODO
