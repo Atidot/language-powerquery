@@ -13,6 +13,7 @@ PowerQuery (M Language) Parser
 
 ## TODO
 
+- [ ] Add line numbers (etc.) to `Annotation`
 - [ ] Package for Hackage
 - [ ] More documentation
 - [ ] Missing Lexer/Parser special keywords ([Link])

@@ -2,7 +2,10 @@
 Tools for working with and analyzing PowerQuery (M Language) scripts
 - Haskell data structures and AST ([language-powerquery-ast])
 - Haskell lexer/parser/printer    ([language-powerquery])
+   - A CLI tools for lexing/parsing/printing
+   - A Javascript/NodeJS version (built with GHCJS)
 - PowerBI `.pbix` file reader     ([pbix])
+   - A CLI tools to extract (and parse) formulas from `.pbix` files
 - Example IHaskell (Jupyter) [notebooks]
    - [Pbix Example]
 
@@ -16,7 +19,11 @@ nix-build --cores 0 -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/19.03.ta
 12:52 barak@berkos:~/Development/atidot/language-powerquery/build (master) $
 ~~~
 - `make` (JavaScript / NodeJS)
-    - TODO:
+~~~ shell
+00:25 barak@berkos:~/Development/atidot/language-powerquery/build (master) $ make build-js
+nix-build --cores 0 -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/19.03.tar.gz --arg compiler \"ghcjs\"
+/nix/store/ghn1vzidvvhh13cbmwr00qj70va6ir5y-powerquery-env
+~~~
 
 - `make` (Docker)
     - TODO:
