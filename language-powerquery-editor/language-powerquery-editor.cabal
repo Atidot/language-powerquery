@@ -23,9 +23,11 @@ library
   -- other-extensions:
   build-depends:       base
                      , lens
+                     , uniplate
                      , aeson
                      , bytestring
                      , text
+                     , time
                      , language-powerquery-ast
                      , language-powerquery
                      , jsaddle
