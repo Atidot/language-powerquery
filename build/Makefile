@@ -14,3 +14,6 @@ notebook:
 
 docker:
 	nix-build ${NIX_FLAGS} docker.nix -o docker.tar.gz
+
+editor:
+	nix-build ${NIX_FLAGS} -A ghcjs.language-powerquery-editor editor.nix

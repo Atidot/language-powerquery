@@ -1,2 +1,4 @@
 result
 docker.tar.gz
+dist-ghcjs
+dist-newstyle
