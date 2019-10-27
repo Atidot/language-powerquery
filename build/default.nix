@@ -1,20 +1,20 @@
 { nixpkgs  ? import <nixpkgs> { config.allowBroken = true; }
-, compiler ? "ghc844"
+, compiler ? "ghc864"
 }:
 with nixpkgs;
 let
-  haskellPackages = import ./haskell.nix { inherit nixpkgs compiler; };
+  haskell = import ./haskell.nix { inherit nixpkgs compiler; };
+  haskellPackages = haskell.packages;
 
   haskellEnv = haskellPackages.ghcWithPackages (ps: with ps; [
     language-powerquery-ast
     language-powerquery
     pbix
-    m2wasm
   ]);
 
 in
 stdenv.mkDerivation rec {
-  name = "powerquery-env";
+  name = "language-powerquery-env";
 
   env = buildEnv { name = name; paths = buildInputs; };
   builder = builtins.toFile "builder.sh" ''
