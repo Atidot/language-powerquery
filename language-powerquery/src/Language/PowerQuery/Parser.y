@@ -220,7 +220,7 @@ section :: { Section Annotation }
 section
     : literal_attributes__opt 'section' section_name__opt ';' section_members__opt { Section $1 $3 $5 (Just Annotation) }
 
-literal_attributes__opt :: { Maybe (RecordLiteral annotation) }
+literal_attributes__opt :: { Maybe (RecordLiteral Annotation) }
 literal_attributes__opt
     : literal_attributes { Just $1 }
     | {- empty -}        { Nothing}
@@ -230,7 +230,7 @@ section_name__opt
     : section_name   { Just $1 }
     | {- empty -}    { Nothing }
 
-section_members__opt :: { Maybe [SectionMember annotation] }
+section_members__opt :: { Maybe [SectionMember Annotation] }
 section_members__opt
     : section_members    { Just $1 }
     | {- empty -}        { Nothing }
