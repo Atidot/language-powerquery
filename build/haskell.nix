@@ -1,5 +1,5 @@
 { nixpkgs  ? import <nixpkgs> { config.allowBroken = true; }
-, compiler ? "ghc864"
+, compiler ? "ghc883"
 , haskellPackages ? nixpkgs.haskell.packages.${compiler}
 }:
 with nixpkgs;

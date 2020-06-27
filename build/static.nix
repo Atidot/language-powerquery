@@ -51,14 +51,18 @@ let
   buildStatic = drv: with pkgs.haskell.lib;
     ( disableSharedExecutables
     ( disableSharedLibraries
-    ( nixpkgs.lib.flip appendConfigureFlags
-        [ "--ghc-option=-optl=-static"
-          "--extra-lib-dirs=${pkgs.gmp6.override { withStatic = true; }}/lib"
-          "--extra-lib-dirs=${pkgs.zlib.static}/lib"
-          "--extra-lib-dirs=${pkgs.libffi.overrideAttrs (old: { dontDisableStatic = true; })}/lib"
-        ]
+    ( justStaticExecutables
+    ( nixpkgs.lib.flip overrideCabal (old: {
+        configureFlags =
+          [ "--ghc-option=-optl=-static"
+            "--extra-lib-dirs=${pkgs.gmp6.override { withStatic = true; }}/lib"
+            "--extra-lib-dirs=${pkgs.zlib.static}/lib"
+            "--extra-lib-dirs=${pkgs.libffi.overrideAttrs (old: { dontDisableStatic = true; })}/lib"
+            "--disable-executable-stripping"
+          ];
+      })
     ( drv
-    ))));
+    )))));
 
   haskellEnv = haskellPackages.ghcWithPackages (ps: with ps; [
     (buildStatic language-powerquery-ast)

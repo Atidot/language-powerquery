@@ -17,6 +17,7 @@ let
           tasty-quickcheck = ease hspkgs.tasty-quickcheck;
           scientific       = ease hspkgs.scientific;
           temporary        = ease hspkgs.temporary;
+          time-compat      = ease hspkgs.time-compat;
         });
   });
 

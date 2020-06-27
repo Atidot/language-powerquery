@@ -1,5 +1,5 @@
 { nixpkgs  ? import <nixpkgs> { config.allowBroken = true; }
-, compiler ? "ghc864"
+, compiler ? "ghc883"
 }:
 with nixpkgs;
 let
