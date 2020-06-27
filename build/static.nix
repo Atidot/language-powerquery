@@ -11,15 +11,18 @@ let
     { buildPackages = super.buildPackages // {
         cabal2nix = super.haskellPackages.cabal2nix;
         happy     = super.haskellPackages.callCabal2nix "happy" "${happySrc}" {};
+        #coreutils = super.coreutils.overrideAttrs (oldAttrs: rec {
+          #doCheck = false;
+        #});
       };
     };
 
-  staticHaskellNixpkgsSrc = fetchTarball https://github.com/nh2/nixpkgs/archive/d9cc01374235745ea8581174c4335ae9dda86504.tar.gz;
+  staticHaskellNixpkgsSrc = fetchTarball https://github.com/nh2/nixpkgs/archive/0c960262d159d3a884dadc3d4e4b131557dad116.tar.gz;
   pkgs = (import staticHaskellNixpkgsSrc { config.allowBroken = true; }).pkgsMusl.appendOverlays [cabal2nixOverlay];
 
   staticHaskellNixSrc = fetchGit {
     url = https://github.com/nh2/static-haskell-nix;
-    rev = "b66fee31b10663588cc23dc806a75f393749d30d";
+    rev = "dbce18f4808d27f6a51ce31585078b49c86bd2b5";
   };
 
   surveyPath = staticHaskellNixSrc + "/survey/default.nix";

@@ -1,4 +1,4 @@
-NIX_FLAGS=--cores 0 -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/19.03.tar.gz
+NIX_FLAGS=--cores 0 -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/20.03.tar.gz
 
 build:
 	nix-build ${NIX_FLAGS}
@@ -7,7 +7,7 @@ build-js:
 	nix-build ${NIX_FLAGS} nodejs.nix
 
 build-static:
-	nix-build ${NIX_FLAGS} static.nix --show-trace
+	nix-build ${NIX_FLAGS} static.nix #--show-trace
 
 shell:
 	nix-shell ${NIX_FLAGS}
